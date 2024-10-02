@@ -2,9 +2,9 @@
 
 It calculates and shows you these beautiful images:
 
-![pic1][images/pic1.jpg]
+![pic1](images/pic1.jpg)
 
-![pic2][images/pic2.jpg]
+![pic2](images/pic2.jpg)
 
 Folder `llir` also has LLVM IR outpur for main calculational module for 4 different optimisation settings!
 
