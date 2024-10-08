@@ -10,33 +10,33 @@ Total: 64 instrs combos; top 30 of them:
 
 inst <- dependency | count
 --- | ---
-load <- alloca | 274724
-br <- icmp | 74973
-icmp <- load | 71391
-alloca | 66456
-br | 61669
-store <- alloca | 40989
-store <- add <- alloca | 30128
-store <- trunc <- alloca | 23956
-sdiv <- mul | 19118
-ashr <- load | 17967
-trunc <- and | 17967
-load | 13180
-sdiv <- load | 13040
-mul <- load | 13040
-mul <- load <- load | 11998
-add <- load <- sdiv | 11998
-and <- ashr | 11978
-sext <- load | 11838
-getelementptr <- alloca <- sext | 11838
-icmp <- call | 9559
-add <- load | 9252
-xor <- phi | 8959
-zext <- xor | 8959
-ret <- zext | 8959
-call | 8443
-ret | 7189
-call <- load <- load | 6599
-add <- load <- load | 6518
-trunc <- ashr | 5989
-and <- load | 5989
+icmp <- add | 28097
+br <- icmp | 26243
+lshr | 18780
+trunc <- lshr | 18780
+sdiv <- mul | 15626
+load | 13776
+mul <- phi <- sdiv | 12520
+add <- sdiv <- sdiv | 12520
+add <- add | 12520
+icmp | 12520
+add <- phi | 9675
+or <- icmp <- icmp | 9366
+br <- or | 9366
+call | 8811
+br | 8769
+call <- load | 6890
+ret | 6887
+store <- call | 6261
+call <- add <- add <- or | 6260
+trunc | 6260
+call <- load <- trunc <- trunc <- trunc <- trunc | 6260
+getelementptr <- alloca <- phi | 6212
+load <- getelementptr | 6212
+sdiv <- load | 6212
+add <- sdiv | 6212
+mul <- phi | 6212
+add <- sdiv <- phi | 6210
+store <- add <- getelementptr | 6210
+sdiv <- sub | 3732
+sdiv <- add | 3732
