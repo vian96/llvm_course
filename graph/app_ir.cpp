@@ -40,6 +40,22 @@ int main() {
   // ------------------------------------------------
   // My code goes here
   // ------------------------------------------------
+  FunctionType *llvmAbsI32Type = FunctionType::get(builder.getInt32Ty(), {builder.getInt32Ty(), builder.getInt1Ty()}, false);
+  FunctionCallee llvmAbsI32Func =
+      module->getOrInsertFunction("llvm.abs.i32", llvmAbsI32Type);
+  
+    //  declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #2
+  FunctionType *p0i8Type = FunctionType::get(voidType, {builder.getInt64Ty(), builder.getInt8PtrTy()}, false);
+  FunctionCallee p0i8Func = module->getOrInsertFunction("llvm.lifetime.start.p0i8", p0i8Type);
+  
+    //  declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #5
+  FunctionType *memsetType = FunctionType::get(voidType, {builder.getInt8PtrTy(), builder.getInt8Ty(), builder.getInt64Ty(), builder.getInt1Ty()}, false);
+    FunctionCallee memsetFunc = module->getOrInsertFunction("llvm.memset.p0i8.i64", memsetType);
+
+
+    // declare i32 @simRand(...) local_unnamed_addr #3
+  FunctionType *simRandType = FunctionType::get(builder.getInt32Ty(), false);
+    FunctionCallee simRandFunc = module->getOrInsertFunction("simRand", simRandType);
 
   //  define dso_local i32 @is_good_pnt(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
   FunctionType *is_good_pntType = FunctionType::get(Type::getInt32Ty(context), {Type::getInt32Ty(context), Type::getInt32Ty(context)}, false);
@@ -106,10 +122,6 @@ int main() {
     builder.CreateCondBr(val25, BB8, BB9);
   }
 
-  //  declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #2
-// TODO   FunctionType *llvmType = ...
-// TODO   Function *llvmFunc = ...
-
   //  define dso_local i32 @getAbsVelocity(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
   FunctionType *getAbsVelocityType = FunctionType::get(Type::getInt32Ty(context), {Type::getInt32Ty(context), Type::getInt32Ty(context)}, false); 
   Function *getAbsVelocityFunc = Function::Create(getAbsVelocityType, Function::ExternalLinkage, "getAbsVelocity", module);
@@ -117,11 +129,14 @@ int main() {
     // BasicBlocks:
     BasicBlock *BB0 = BasicBlock::Create(context, "", getAbsVelocityFunc);
     // MAIN CODE
-// TODO    unknown cmd: %3 = tail call i32 @llvm.abs.i32(i32 %0, i1 true)
-// TODO    unknown cmd: %4 = tail call i32 @llvm.abs.i32(i32 %1, i1 true)
-// TODO    Value *val5 = builder.CreateAdd(val4, val3);
-// TODO    Value *val6 = builder.CreateAnd(val5, builder.getInt32(255));
-// TODO    builder.CreateRet(..)
+    auto args = is_good_pntFunc->arg_begin();
+    llvm::Value *val0 = &*args++;
+    llvm::Value *val1 = &*args;
+    Value *val3 = builder.CreateCall(llvmAbsI32Func, {val0, builder.getInt1(true)});
+    Value *val4 = builder.CreateCall(llvmAbsI32Func, {val1, builder.getInt1(true)});
+    Value *val5 = builder.CreateAdd(val4, val3);
+    Value *val6 = builder.CreateAnd(val5, builder.getInt32(255));
+    builder.CreateRet(val6);
   }
 
   //  define dso_local void @app() local_unnamed_addr #4 {
@@ -149,11 +164,11 @@ int main() {
 
     Value *val3 = builder.CreateBitCast(val1, llvm::Type::getInt8PtrTy(context));
 
-// TODO    unknown cmd: call void @llvm.lifetime.start.p0i8(i64 40, i8* nonnull %3) #7
-// TODO    unknown cmd: call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 16 dereferenceable(40) %3, i8 0, i64 40, i1 false)
+    builder.CreateCall(p0i8Func, {builder.getInt64(40), val3});
+    builder.CreateCall(memsetFunc, {val3, builder.getInt8(0), builder.getInt64(40), builder.getInt1(false)});
     Value *val4 = builder.CreateBitCast(val2, llvm::Type::getInt8PtrTy(context));
-// TODO    unknown cmd: call void @llvm.lifetime.start.p0i8(i64 40, i8* nonnull %4) #7
-// TODO    unknown cmd: call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 16 dereferenceable(40) %4, i8 0, i64 40, i1 false)
+    builder.CreateCall(p0i8Func, {builder.getInt64(40), val4});
+    builder.CreateCall(memsetFunc, {val4, builder.getInt8(0), builder.getInt64(40), builder.getInt1(false)});
     builder.CreateBr(BB5);
     builder.SetInsertPoint(BB5);
     PHINode *val6 = builder.CreatePHI(builder.getInt32Ty(), 2);
@@ -220,8 +235,8 @@ int main() {
     Value *val52 = builder.CreateSDiv(val41, builder.getInt32(100));
     Value *val53 = builder.CreateSDiv(val45, builder.getInt32(200000));
     Value *val54 = builder.CreateSDiv(val48, builder.getInt32(200000));
-// TODO    unknown cmd: %55 = tail call i32 @llvm.abs.i32(i32 %46, i1 true) #7
-// TODO    unknown cmd: %56 = tail call i32 @llvm.abs.i32(i32 %49, i1 true) #7
+    Value *val55 = builder.CreateCall(llvmAbsI32Func, {val46, builder.getInt1(true)});
+    Value *val56 = builder.CreateCall(llvmAbsI32Func, {val49, builder.getInt1(true)});
     Value *val57 = builder.CreateAdd(val56, val55);
     Value *val58 = builder.CreateShl(val57, builder.getInt32(16));
     Value *val59 = builder.CreateOr(val58, builder.getInt32(-16776961));
@@ -260,9 +275,6 @@ int main() {
     Value *val82 = builder.CreateICmpEQ(val81, builder.getInt32(10));
     builder.CreateCondBr(val82, BB9, BB11);
   }
-  //  declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #5
-  FunctionType *llvmType = ...
-  Function *llvmFunc = ...
 
   // ------------------------------------------------
   // My code ends here
