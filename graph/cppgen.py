@@ -9,7 +9,7 @@ for s in ss.split('; Function Attrs')[1:-1]:
     print(f'FunctionType *{fname}Type = ...')
     print(f'Function *{fname}Func = ...')
     print("{\n// BasicBlocks:")
-    print('BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);')
+    print(f'BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);')
     for i in s.split('\n'):
         if (match := re.match(r'(\d+):', i)):
             n = int(match.group(1))
@@ -48,7 +48,7 @@ for s in ss.split('; Function Attrs')[1:-1]:
                     'sub': 'Sub',
                 }.get(cmdn)
             else:
-                op = 'ICmp{cmd.split(' ')[1].upper()}'
+                op = f"ICmp{cmd.split(' ')[1].upper()}"
             if op:
                 print(f'Value *val{match.group(1)} = builder.Create{op}({arg1}, {arg2});')
             else:

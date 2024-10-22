@@ -3,13 +3,13 @@ FunctionType *is_good_pntType = ...
 Function *is_good_pntFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", is_good_pntFunc);
 // MAIN CODE
 unknown cmd: define dso_local i32 @is_good_pnt(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
 Value *val3 = builder.CreateAdd(val0, builder.getInt32(-1));
-Value *val4 = builder.CreateICmp{cmd.split()[1].upper()}(val3, builder.getInt32(699));
+Value *val4 = builder.CreateICmpULT(val3, builder.getInt32(699));
 Value *val5 = builder.CreateAdd(val1, builder.getInt32(-1));
-Value *val6 = builder.CreateICmp{cmd.split()[1].upper()}(val5, builder.getInt32(499));
+Value *val6 = builder.CreateICmpULT(val5, builder.getInt32(499));
 Value *val7 = builder.CreateAnd(val4, val6);
 unknown cmd: %8 = zext i1 %7 to i32
 builder.CreateRet(..)
@@ -19,7 +19,7 @@ FunctionType *drawLineType = ...
 Function *drawLineFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", drawLineFunc);
 BasicBlock *BB8 = BasicBlock::Create(context, "", drawLineFunc);
 BasicBlock *BB9 = BasicBlock::Create(context, "", drawLineFunc);
 BasicBlock *BB22 = BasicBlock::Create(context, "", drawLineFunc);
@@ -40,9 +40,9 @@ Value *val14 = builder.CreateMul(val10, val3);
 Value *val15 = builder.CreateSDiv(val14, builder.getInt32(10));
 Value *val16 = builder.CreateAdd(val15, val1);
 Value *val17 = builder.CreateAdd(val13, builder.getInt32(-700));
-Value *val18 = builder.CreateICmp{cmd.split()[1].upper()}(val17, builder.getInt32(-699));
+Value *val18 = builder.CreateICmpULT(val17, builder.getInt32(-699));
 Value *val19 = builder.CreateAdd(val16, builder.getInt32(-500));
-Value *val20 = builder.CreateICmp{cmd.split()[1].upper()}(val19, builder.getInt32(-499));
+Value *val20 = builder.CreateICmpULT(val19, builder.getInt32(-499));
 Value *val21 = builder.CreateOr(val18, val20);
 unknown cmd: br i1 %21, label %23, label %22
 builder.SetInsertPoint(BB22);
@@ -50,7 +50,7 @@ unknown cmd: tail call void @simPutPixel(i32 noundef %13, i32 noundef %16, i32 n
 builder.CreateBr(BB23);
 builder.SetInsertPoint(BB23);
 Value *val24 = builder.CreateAdd(val10, builder.getInt32(1));
-Value *val25 = builder.CreateICmp{cmd.split()[1].upper()}(val24, builder.getInt32(10));
+Value *val25 = builder.CreateICmpEQ(val24, builder.getInt32(10));
 unknown cmd: br i1 %25, label %8, label %9, !llvm.loop !5
 }
 //  declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #2
@@ -58,7 +58,7 @@ FunctionType *llvmType = ...
 Function *llvmFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", llvmFunc);
 // MAIN CODE
 unknown cmd: declare void @llvm.lifetime.start.p0i8(i64 immarg, i8* nocapture) #2
 unknown cmd: declare void @simPutPixel(i32 noundef, i32 noundef, i32 noundef) local_unnamed_addr #3
@@ -68,7 +68,7 @@ FunctionType *getAbsVelocityType = ...
 Function *getAbsVelocityFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", getAbsVelocityFunc);
 // MAIN CODE
 unknown cmd: define dso_local i32 @getAbsVelocity(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
 unknown cmd: %3 = tail call i32 @llvm.abs.i32(i32 %0, i1 true)
@@ -82,7 +82,7 @@ FunctionType *appType = ...
 Function *appFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", appFunc);
 BasicBlock *BB5 = BasicBlock::Create(context, "", appFunc);
 BasicBlock *BB9 = BasicBlock::Create(context, "", appFunc);
 BasicBlock *BB11 = BasicBlock::Create(context, "", appFunc);
@@ -108,7 +108,7 @@ builder.CreateBr(BB5);
 builder.SetInsertPoint(BB5);
 unknown cmd: %6 = phi i32 [ 0, %0 ], [ %10, %9 ]
 Value *val7 = builder.CreateURem(val6, builder.getInt32(5));
-Value *val8 = builder.CreateICmp{cmd.split()[1].upper()}(val7, builder.getInt32(0));
+Value *val8 = builder.CreateICmpEQ(val7, builder.getInt32(0));
 builder.CreateBr(BB11);
 builder.SetInsertPoint(BB9);
 Value *val10 = builder.CreateAdd(val6, builder.getInt32(1));
@@ -122,9 +122,9 @@ unknown cmd: %16 = load i32, i32* %15, align 4, !tbaa !7
 Value *val17 = builder.CreateSDiv(val14, builder.getInt32(100));
 Value *val18 = builder.CreateSDiv(val16, builder.getInt32(100));
 Value *val19 = builder.CreateAdd(val17, builder.getInt32(-700));
-Value *val20 = builder.CreateICmp{cmd.split()[1].upper()}(val19, builder.getInt32(-699));
+Value *val20 = builder.CreateICmpULT(val19, builder.getInt32(-699));
 Value *val21 = builder.CreateAdd(val18, builder.getInt32(-500));
-Value *val22 = builder.CreateICmp{cmd.split()[1].upper()}(val21, builder.getInt32(-499));
+Value *val22 = builder.CreateICmpULT(val21, builder.getInt32(-499));
 Value *val23 = builder.CreateOr(val20, val22);
 unknown cmd: br i1 %23, label %24, label %39
 builder.SetInsertPoint(BB24);
@@ -175,9 +175,9 @@ Value *val65 = builder.CreateMul(val61, val54);
 Value *val66 = builder.CreateSDiv(val65, builder.getInt32(10));
 Value *val67 = builder.CreateAdd(val66, val52);
 Value *val68 = builder.CreateAdd(val64, builder.getInt32(-700));
-Value *val69 = builder.CreateICmp{cmd.split()[1].upper()}(val68, builder.getInt32(-699));
+Value *val69 = builder.CreateICmpULT(val68, builder.getInt32(-699));
 Value *val70 = builder.CreateAdd(val67, builder.getInt32(-500));
-Value *val71 = builder.CreateICmp{cmd.split()[1].upper()}(val70, builder.getInt32(-499));
+Value *val71 = builder.CreateICmpULT(val70, builder.getInt32(-499));
 Value *val72 = builder.CreateOr(val69, val71);
 unknown cmd: br i1 %72, label %74, label %73
 builder.SetInsertPoint(BB73);
@@ -185,7 +185,7 @@ unknown cmd: tail call void @simPutPixel(i32 noundef %64, i32 noundef %67, i32 n
 builder.CreateBr(BB74);
 builder.SetInsertPoint(BB74);
 Value *val75 = builder.CreateAdd(val61, builder.getInt32(1));
-Value *val76 = builder.CreateICmp{cmd.split()[1].upper()}(val75, builder.getInt32(10));
+Value *val76 = builder.CreateICmpEQ(val75, builder.getInt32(10));
 unknown cmd: br i1 %76, label %77, label %60, !llvm.loop !5
 builder.SetInsertPoint(BB77);
 unknown cmd: tail call void (...) @simFlush() #7
@@ -196,7 +196,7 @@ Value *val80 = builder.CreateAdd(val49, val41);
 unknown cmd: store i32 %79, i32* %13, align 4, !tbaa !7
 unknown cmd: store i32 %80, i32* %15, align 4, !tbaa !7
 Value *val81 = builder.CreateAdd(val12, builder.getInt32(1));
-Value *val82 = builder.CreateICmp{cmd.split()[1].upper()}(val81, builder.getInt32(10));
+Value *val82 = builder.CreateICmpEQ(val81, builder.getInt32(10));
 unknown cmd: br i1 %82, label %9, label %11, !llvm.loop !11
 }
 //  declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #5
@@ -204,7 +204,7 @@ FunctionType *llvmType = ...
 Function *llvmFunc = ...
 {
 // BasicBlocks:
-BasicBlock *BB0 = BasicBlock::Create(context, "", {fname}Func);
+BasicBlock *BB0 = BasicBlock::Create(context, "", llvmFunc);
 // MAIN CODE
 unknown cmd: declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #5
 unknown cmd: declare i32 @simRand(...) local_unnamed_addr #3
