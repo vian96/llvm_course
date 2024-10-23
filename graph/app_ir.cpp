@@ -65,15 +65,15 @@ int main() {
     BasicBlock *BB0 = BasicBlock::Create(context, "", is_good_pntFunc);
     builder.SetInsertPoint(BB0);
     auto args = is_good_pntFunc->arg_begin();
-    llvm::Value *val0 = &*args++;
-    llvm::Value *val1 = &*args;
+    Value *val0 = &*args++;
+    Value *val1 = &*args;
     // MAIN CODE
     Value *val3 = builder.CreateAdd(val0, builder.getInt32(-1));
     Value *val4 = builder.CreateICmpULT(val3, builder.getInt32(699));
     Value *val5 = builder.CreateAdd(val1, builder.getInt32(-1));
     Value *val6 = builder.CreateICmpULT(val5, builder.getInt32(499));
     Value *val7 = builder.CreateAnd(val4, val6);
-    Value *val8 = builder.CreateZExt(val7, llvm::Type::getInt32Ty(context));
+    Value *val8 = builder.CreateZExt(val7, builder.getInt32Ty());
     builder.CreateRet(val8);
   }
 
@@ -90,11 +90,11 @@ int main() {
     BasicBlock *BB23 = BasicBlock::Create(context, "", drawLineFunc);
     // MAIN CODE
     auto args = drawLineFunc->arg_begin();
-    llvm::Value *val0 = &*args++;
-    llvm::Value *val1 = &*args++;
-    llvm::Value *val2 = &*args++;
-    llvm::Value *val3 = &*args++;
-    llvm::Value *val4 = &*args;
+    Value *val0 = &*args++;
+    Value *val1 = &*args++;
+    Value *val2 = &*args++;
+    Value *val3 = &*args++;
+    Value *val4 = &*args;
     Value *val6 = builder.CreateShl(val4, 16);
     Value *val7 = builder.CreateAdd(val6, builder.getInt32(-16776961));
     builder.CreateBr(BB9);
@@ -136,8 +136,8 @@ int main() {
     builder.SetInsertPoint(BB0);
     // MAIN CODE
     auto args = getAbsVelocityFunc->arg_begin();
-    llvm::Value *val0 = &*args++;
-    llvm::Value *val1 = &*args;
+    Value *val0 = &*args++;
+    Value *val1 = &*args;
     Value *val3 = builder.CreateCall(llvmAbsI32Func, {val0, builder.getInt1(true)});
     Value *val4 = builder.CreateCall(llvmAbsI32Func, {val1, builder.getInt1(true)});
     Value *val5 = builder.CreateAdd(val4, val3);
@@ -162,18 +162,18 @@ int main() {
     BasicBlock *BB77 = BasicBlock::Create(context, "", appFunc);
     BasicBlock *BB78 = BasicBlock::Create(context, "", appFunc);
     // MAIN CODE
-    llvm::AllocaInst *val1 = builder.CreateAlloca(
+    AllocaInst *val1 = builder.CreateAlloca(
         ArrayType::get(Type::getInt32Ty(context), 10),
         nullptr, "array");
-    llvm::AllocaInst *val2 = builder.CreateAlloca(
+    AllocaInst *val2 = builder.CreateAlloca(
         ArrayType::get(Type::getInt32Ty(context), 10),
         nullptr, "array");
 
-    Value *val3 = builder.CreateBitCast(val1, llvm::Type::getInt8PtrTy(context));
+    Value *val3 = builder.CreateBitCast(val1, Type::getInt8PtrTy(context));
 
     builder.CreateCall(p0i8Func, {builder.getInt64(40), val3});
     builder.CreateCall(memsetFunc, {val3, builder.getInt8(0), builder.getInt64(40), builder.getInt1(false)});
-    Value *val4 = builder.CreateBitCast(val2, llvm::Type::getInt8PtrTy(context));
+    Value *val4 = builder.CreateBitCast(val2, Type::getInt8PtrTy(context));
     builder.CreateCall(p0i8Func, {builder.getInt64(40), val4});
     builder.CreateCall(memsetFunc, {val4, builder.getInt8(0), builder.getInt64(40), builder.getInt1(false)});
     builder.CreateBr(BB5);
@@ -210,16 +210,16 @@ int main() {
     builder.SetInsertPoint(BB24);
     Value *val25 = builder.CreateCall(simRandFunc);
     Value *val26 = builder.CreateSRem(val25, builder.getInt32(700));
-    Value *val27 = builder.CreateTrunc(val26, Type::getInt16Ty(context));
+    Value *val27 = builder.CreateTrunc(val26, builder.getInt16Ty());
     Value *val28 = builder.CreateSDiv(val27, builder.getInt16(3));
-    Value *val29 = builder.CreateSExt(val28, Type::getInt32Ty(context));
+    Value *val29 = builder.CreateSExt(val28, builder.getInt32Ty());
     Value *val30 = builder.CreateMul(val29, builder.getInt32(100));
     Value *val31 = builder.CreateAdd(val30, builder.getInt32(35000));
     Value *val32 = builder.CreateCall(simRandFunc);
     Value *val33 = builder.CreateSRem(val32, builder.getInt32(500));
-    Value *val34 = builder.CreateTrunc(val33, Type::getInt16Ty(context));
+    Value *val34 = builder.CreateTrunc(val33, builder.getInt16Ty());
     Value *val35 = builder.CreateSDiv(val34, builder.getInt16(3));
-    Value *val36 = builder.CreateSExt(val35, Type::getInt32Ty(context));
+    Value *val36 = builder.CreateSExt(val35, builder.getInt32Ty());
     Value *val37 = builder.CreateMul(val36, builder.getInt32(100));
     Value *val38 = builder.CreateAdd(val37, builder.getInt32(25000));
     builder.CreateBr(BB39);
