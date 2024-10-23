@@ -100,7 +100,7 @@ int main() {
     builder.CreateRetVoid();
     builder.SetInsertPoint(BB9);
     PHINode *val10 = builder.CreatePHI(builder.getInt32Ty(), 2);
-// TODO    unknown cmd: %10 = phi i32 [ 0, %5 ], [ %24, %23 ]
+// unknown cmd: %10 = phi i32 [ 0, %5 ], [ %24, %23 ]
     Value *val11 = builder.CreateMul(val10, val2);
     Value *val12 = builder.CreateSDiv(val11, builder.getInt32(10));
     Value *val13 = builder.CreateAdd(val12, val0);
@@ -120,6 +120,9 @@ int main() {
     Value *val24 = builder.CreateAdd(val10, builder.getInt32(1));
     Value *val25 = builder.CreateICmpEQ(val24, builder.getInt32(10));
     builder.CreateCondBr(val25, BB8, BB9);
+// unknown cmd: %10 = phi i32 [ 0, %5 ], [ %24, %23 ]
+    val10->addIncoming(builder.getInt32(0), BB0);
+    val10->addIncoming(val24, BB23);
   }
 
   //  define dso_local i32 @getAbsVelocity(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
@@ -172,7 +175,7 @@ int main() {
     builder.CreateBr(BB5);
     builder.SetInsertPoint(BB5);
     PHINode *val6 = builder.CreatePHI(builder.getInt32Ty(), 2);
-// TODO    unknown cmd: %6 = phi i32 [ 0, %0 ], [ %10, %9 ]
+// unknown cmd: %6 = phi i32 [ 0, %0 ], [ %10, %9 ]
     Value *val7 = builder.CreateURem(val6, builder.getInt32(5));
     Value *val8 = builder.CreateICmpEQ(val7, builder.getInt32(0));
     builder.CreateBr(BB11);
@@ -181,7 +184,7 @@ int main() {
     builder.CreateBr(BB5);
     builder.SetInsertPoint(BB11);
     PHINode *val12 = builder.CreatePHI(builder.getInt32Ty(), 2);
- // TODO   unknown cmd: %12 = phi i64 [ 0, %5 ], [ %81, %78 ]
+ // unknown cmd: %12 = phi i64 [ 0, %5 ], [ %81, %78 ]
     Value *val13 = builder.CreateInBoundsGEP(
           ArrayType::get(Type::getInt32Ty(context), 10), 
           val1, {val12});
@@ -218,9 +221,9 @@ int main() {
     builder.CreateBr(BB39);
     builder.SetInsertPoint(BB39);
     PHINode *val40 = builder.CreatePHI(builder.getInt32Ty(), 2);
-  // TODO  unknown cmd: %40 = phi i32 [ %14, %11 ], [ %31, %24 ]
+  // unknown cmd: %40 = phi i32 [ %14, %11 ], [ %31, %24 ]
     PHINode *val41 = builder.CreatePHI(builder.getInt32Ty(), 2);
-  // TODO  unknown cmd: %41 = phi i32 [ %16, %11 ], [ %38, %24 ]
+  // unknown cmd: %41 = phi i32 [ %16, %11 ], [ %38, %24 ]
     Value *val42 = builder.CreateMul(val40, builder.getInt32(250));
     Value *val43 = builder.CreateMul(val41, val40);
     Value *val44 = builder.CreateSDiv(val43, builder.getInt32(100));
@@ -243,7 +246,7 @@ int main() {
     builder.CreateBr(BB60);
     builder.SetInsertPoint(BB60);
     PHINode *val61 = builder.CreatePHI(builder.getInt32Ty(), 2);
-// TODO    unknown cmd: %61 = phi i32 [ 0, %50 ], [ %75, %74 ]
+// unknown cmd: %61 = phi i32 [ 0, %50 ], [ %75, %74 ]
     Value *val62 = builder.CreateMul(val61, val53);
     Value *val63 = builder.CreateSDiv(val62, builder.getInt32(10));
     Value *val64 = builder.CreateAdd(val63, val51);
@@ -274,6 +277,23 @@ int main() {
     Value *val81 = builder.CreateAdd(val12, builder.getInt32(1));
     Value *val82 = builder.CreateICmpEQ(val81, builder.getInt32(10));
     builder.CreateCondBr(val82, BB9, BB11);
+    // PHI NODES CONNECTIONS GO HERE
+// unknown cmd: %6 = phi i32 [ 0, %0 ], [ %10, %9 ]
+    val6->addIncoming(builder.getInt32(0), BB0);
+    val6->addIncoming(val10, BB9);
+ // unknown cmd: %12 = phi i64 [ 0, %5 ], [ %81, %78 ]
+    val12->addIncoming(builder.getInt32(0), BB5);
+    val12->addIncoming(val81, BB78);
+ // unknown cmd: %40 = phi i32 [ %14, %11 ], [ %31, %24 ]
+    val40->addIncoming(val14, BB11);
+    val40->addIncoming(val31, BB24);
+ // unknown cmd: %41 = phi i32 [ %16, %11 ], [ %38, %24 ]
+    val41->addIncoming(val16, BB11);
+    val41->addIncoming(val38, BB24);
+ // unknown cmd: %61 = phi i32 [ 0, %50 ], [ %75, %74 ]
+    val61->addIncoming(builder.getInt32(0), BB50);
+    val61->addIncoming(val75, BB74);
+
   }
 
   // ------------------------------------------------
