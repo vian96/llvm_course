@@ -85,7 +85,7 @@ int main() {
 
   //  define dso_local void @drawLine(i32 noundef %0, i32 noundef %1, i32 noundef %2, i32 noundef %3, i32 noundef %4) local_unnamed_addr #1 {
   FunctionType *drawLineType = FunctionType::get(voidType, {Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context)}, false);
-  Function *drawLineFunc = Function::Create(is_good_pntType, Function::ExternalLinkage, "drawLine", module);
+  Function *drawLineFunc = Function::Create(drawLineType, Function::ExternalLinkage, "drawLine", module);
   std::cout << "def1\n";
   {
     // BasicBlocks:
@@ -97,14 +97,15 @@ int main() {
     BasicBlock *BB23 = BasicBlock::Create(context, "", drawLineFunc);
   std::cout << "bb1\n";
     // MAIN CODE
-    auto args = is_good_pntFunc->arg_begin();
+    auto args = drawLineFunc->arg_begin();
     llvm::Value *val0 = &*args++;
     llvm::Value *val1 = &*args++;
     llvm::Value *val2 = &*args++;
     llvm::Value *val3 = &*args++;
     llvm::Value *val4 = &*args;
+//  module->print(outs(), nullptr);
   std::cout << "args1asfasfasf\n";
-    Value *val6 = builder.CreateShl(val4, builder.getInt32(16));
+    Value *val6 = builder.CreateShl(val4, 16);
   std::cout << "int16\n" << std::endl;
     Value *val7 = builder.CreateAdd(val6, builder.getInt32(-16776961));
   std::cout << "int1\n" << std::endl;
@@ -154,7 +155,7 @@ int main() {
     BasicBlock *BB0 = BasicBlock::Create(context, "", getAbsVelocityFunc);
     builder.SetInsertPoint(BB0);
     // MAIN CODE
-    auto args = is_good_pntFunc->arg_begin();
+    auto args = getAbsVelocityFunc->arg_begin();
     llvm::Value *val0 = &*args++;
     llvm::Value *val1 = &*args;
     Value *val3 = builder.CreateCall(llvmAbsI32Func, {val0, builder.getInt1(true)});
@@ -207,15 +208,15 @@ int main() {
     Value *val10 = builder.CreateAdd(val6, builder.getInt32(1));
     builder.CreateBr(BB5);
     builder.SetInsertPoint(BB11);
-    PHINode *val12 = builder.CreatePHI(builder.getInt32Ty(), 2);
+    PHINode *val12 = builder.CreatePHI(builder.getInt64Ty(), 2);
  // unknown cmd: %12 = phi i64 [ 0, %5 ], [ %81, %78 ]
     Value *val13 = builder.CreateInBoundsGEP(
-          ArrayType::get(Type::getInt32Ty(context), 10), 
+          ArrayType::get(Type::getInt64Ty(context), 10), 
           val1, {val12});
 // check?    unknown cmd: %13 = getelementptr inbounds [10 x i32], [10 x i32]* %1, i64 0, i64 %12
     Value *val14 = builder.CreateLoad(builder.getInt32Ty(), val13);
     Value *val15 = builder.CreateInBoundsGEP(
-          ArrayType::get(Type::getInt32Ty(context), 10), 
+          ArrayType::get(Type::getInt64Ty(context), 10), 
           val2, {val12});
    //check? unknown cmd: %15 = getelementptr inbounds [10 x i32], [10 x i32]* %2, i64 0, i64 %12
     Value *val16 = builder.CreateLoad(builder.getInt32Ty(), val15);
@@ -298,15 +299,15 @@ int main() {
     Value *val80 = builder.CreateAdd(val49, val41);
     builder.CreateStore(val79, val13);
     builder.CreateStore(val80, val15);
-    Value *val81 = builder.CreateAdd(val12, builder.getInt32(1));
-    Value *val82 = builder.CreateICmpEQ(val81, builder.getInt32(10));
+    Value *val81 = builder.CreateAdd(val12, builder.getInt64(1));
+    Value *val82 = builder.CreateICmpEQ(val81, builder.getInt64(10));
     builder.CreateCondBr(val82, BB9, BB11);
     // PHI NODES CONNECTIONS GO HERE
 // unknown cmd: %6 = phi i32 [ 0, %0 ], [ %10, %9 ]
     val6->addIncoming(builder.getInt32(0), BB0);
     val6->addIncoming(val10, BB9);
  // unknown cmd: %12 = phi i64 [ 0, %5 ], [ %81, %78 ]
-    val12->addIncoming(builder.getInt32(0), BB5);
+    val12->addIncoming(builder.getInt64(0), BB5);
     val12->addIncoming(val81, BB78);
  // unknown cmd: %40 = phi i32 [ %14, %11 ], [ %31, %24 ]
     val40->addIncoming(val14, BB11);
