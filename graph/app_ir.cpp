@@ -1,4 +1,7 @@
 #include "sim.h"
+#include <iostream>
+
+
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
@@ -10,6 +13,7 @@
 using namespace llvm;
 
 int main() {
+  std::cout << "start\n";
   LLVMContext context;
   // ; ModuleID = 'app.c'
   // source_filename = "app.c"
@@ -56,6 +60,7 @@ int main() {
     // declare i32 @simRand(...) local_unnamed_addr #3
   FunctionType *simRandType = FunctionType::get(builder.getInt32Ty(), false);
     FunctionCallee simRandFunc = module->getOrInsertFunction("simRand", simRandType);
+  std::cout << "init\n";
 
   //  define dso_local i32 @is_good_pnt(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
   FunctionType *is_good_pntType = FunctionType::get(Type::getInt32Ty(context), {Type::getInt32Ty(context), Type::getInt32Ty(context)}, false);
@@ -63,6 +68,7 @@ int main() {
   {
     // BasicBlocks:
     BasicBlock *BB0 = BasicBlock::Create(context, "", is_good_pntFunc);
+    builder.SetInsertPoint(BB0);
     auto args = is_good_pntFunc->arg_begin();
     llvm::Value *val0 = &*args++;
     llvm::Value *val1 = &*args;
@@ -75,17 +81,21 @@ int main() {
     Value *val8 = builder.CreateZExt(val7, llvm::Type::getInt32Ty(context));
     builder.CreateRet(val8);
   }
+  std::cout << "func1\n";
 
   //  define dso_local void @drawLine(i32 noundef %0, i32 noundef %1, i32 noundef %2, i32 noundef %3, i32 noundef %4) local_unnamed_addr #1 {
   FunctionType *drawLineType = FunctionType::get(voidType, {Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context), Type::getInt32Ty(context)}, false);
   Function *drawLineFunc = Function::Create(is_good_pntType, Function::ExternalLinkage, "drawLine", module);
+  std::cout << "def1\n";
   {
     // BasicBlocks:
     BasicBlock *BB0 = BasicBlock::Create(context, "", drawLineFunc);
+    builder.SetInsertPoint(BB0);
     BasicBlock *BB8 = BasicBlock::Create(context, "", drawLineFunc);
     BasicBlock *BB9 = BasicBlock::Create(context, "", drawLineFunc);
     BasicBlock *BB22 = BasicBlock::Create(context, "", drawLineFunc);
     BasicBlock *BB23 = BasicBlock::Create(context, "", drawLineFunc);
+  std::cout << "bb1\n";
     // MAIN CODE
     auto args = is_good_pntFunc->arg_begin();
     llvm::Value *val0 = &*args++;
@@ -93,13 +103,19 @@ int main() {
     llvm::Value *val2 = &*args++;
     llvm::Value *val3 = &*args++;
     llvm::Value *val4 = &*args;
+  std::cout << "args1asfasfasf\n";
     Value *val6 = builder.CreateShl(val4, builder.getInt32(16));
+  std::cout << "int16\n" << std::endl;
     Value *val7 = builder.CreateAdd(val6, builder.getInt32(-16776961));
+  std::cout << "int1\n" << std::endl;
     builder.CreateBr(BB9);
+  std::cout << "br1\n" << std::endl;
     builder.SetInsertPoint(BB8);
     builder.CreateRetVoid();
+  std::cout << "retv1\n" << std::endl;
     builder.SetInsertPoint(BB9);
     PHINode *val10 = builder.CreatePHI(builder.getInt32Ty(), 2);
+  std::cout << "phi1\n" << std::endl;
 // unknown cmd: %10 = phi i32 [ 0, %5 ], [ %24, %23 ]
     Value *val11 = builder.CreateMul(val10, val2);
     Value *val12 = builder.CreateSDiv(val11, builder.getInt32(10));
@@ -108,22 +124,27 @@ int main() {
     Value *val15 = builder.CreateSDiv(val14, builder.getInt32(10));
     Value *val16 = builder.CreateAdd(val15, val1);
     Value *val17 = builder.CreateAdd(val13, builder.getInt32(-700));
+  std::cout << "icmp1\n";
     Value *val18 = builder.CreateICmpULT(val17, builder.getInt32(-699));
     Value *val19 = builder.CreateAdd(val16, builder.getInt32(-500));
     Value *val20 = builder.CreateICmpULT(val19, builder.getInt32(-499));
     Value *val21 = builder.CreateOr(val18, val20);
+  std::cout << "condbr1\n";
     builder.CreateCondBr(val21, BB23, BB22);
     builder.SetInsertPoint(BB22);
     builder.CreateCall(simPutPixelFunc, {val13, val16, val7});
+  std::cout << "call1\n";
     builder.CreateBr(BB23);
     builder.SetInsertPoint(BB23);
     Value *val24 = builder.CreateAdd(val10, builder.getInt32(1));
     Value *val25 = builder.CreateICmpEQ(val24, builder.getInt32(10));
     builder.CreateCondBr(val25, BB8, BB9);
+    std::cout << "phis1\n";
 // unknown cmd: %10 = phi i32 [ 0, %5 ], [ %24, %23 ]
     val10->addIncoming(builder.getInt32(0), BB0);
     val10->addIncoming(val24, BB23);
   }
+  std::cout << "func2\n";
 
   //  define dso_local i32 @getAbsVelocity(i32 noundef %0, i32 noundef %1) local_unnamed_addr #0 {
   FunctionType *getAbsVelocityType = FunctionType::get(Type::getInt32Ty(context), {Type::getInt32Ty(context), Type::getInt32Ty(context)}, false); 
@@ -131,6 +152,7 @@ int main() {
   {
     // BasicBlocks:
     BasicBlock *BB0 = BasicBlock::Create(context, "", getAbsVelocityFunc);
+    builder.SetInsertPoint(BB0);
     // MAIN CODE
     auto args = is_good_pntFunc->arg_begin();
     llvm::Value *val0 = &*args++;
@@ -141,11 +163,13 @@ int main() {
     Value *val6 = builder.CreateAnd(val5, builder.getInt32(255));
     builder.CreateRet(val6);
   }
+  std::cout << "func3\n";
 
   //  define dso_local void @app() local_unnamed_addr #4 {
   {
     // BasicBlocks:
     BasicBlock *BB0 = BasicBlock::Create(context, "", appFunc);
+    builder.SetInsertPoint(BB0);
     BasicBlock *BB5 = BasicBlock::Create(context, "", appFunc);
     BasicBlock *BB9 = BasicBlock::Create(context, "", appFunc);
     BasicBlock *BB11 = BasicBlock::Create(context, "", appFunc);
@@ -295,6 +319,7 @@ int main() {
     val61->addIncoming(val75, BB74);
 
   }
+  std::cout << "lastfunc\n";
 
   // ------------------------------------------------
   // My code ends here
@@ -303,6 +328,7 @@ int main() {
 
   // Dump LLVM IR
   module->print(outs(), nullptr);
+  std::cout << "dump\n";
 
   // Interpreter of LLVM IR
   outs() << "Running code...\n";
@@ -322,6 +348,7 @@ int main() {
   ee->finalizeObject();
 
   simInit();
+  std::cout << "init2\n";
 
   ArrayRef<GenericValue> noargs;
   GenericValue v = ee->runFunction(appFunc, noargs);
