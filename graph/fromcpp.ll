@@ -1,25 +1,9 @@
-start
-init
-func1
-def1
-bb1
-args1asfasfasf
-int16
-
-int1
-
-br1
-
-retv1
-
-phi1
-
 ; ModuleID = 'app.c'
 source_filename = "app.c"
 
 declare void @simPutPixel(i32, i32, i32)
 
-declare void @simFlush(void)
+declare void @simFlush()
 
 define i32 @app() {
   %array = alloca [10 x i32], align 4
@@ -42,9 +26,9 @@ define i32 @app() {
 
 7:                                                ; preds = %74, %1
   %8 = phi i64 [ 0, %1 ], [ %77, %74 ]
-  %9 = getelementptr inbounds [10 x i64], ptr %array, i64 %8
+  %9 = getelementptr inbounds [10 x i32], ptr %array, i64 0, i64 %8
   %10 = load i32, ptr %9, align 4
-  %11 = getelementptr inbounds [10 x i64], ptr %array1, i64 %8
+  %11 = getelementptr inbounds [10 x i32], ptr %array1, i64 0, i64 %8
   %12 = load i32, ptr %11, align 4
   %13 = sdiv i32 %10, 100
   %14 = sdiv i32 %12, 100
@@ -59,14 +43,14 @@ define i32 @app() {
   %21 = call i32 @simRand()
   %22 = srem i32 %21, 700
   %23 = trunc i32 %22 to i16
-  %24 = sdiv i16 %23, i32 3
+  %24 = sdiv i16 %23, 3
   %25 = sext i16 %24 to i32
   %26 = mul i32 %25, 100
   %27 = add i32 %26, 35000
   %28 = call i32 @simRand()
   %29 = srem i32 %28, 500
   %30 = trunc i32 %29 to i16
-  %31 = sdiv i16 %30, i32 3
+  %31 = sdiv i16 %30, 3
   %32 = sext i16 %31 to i32
   %33 = mul i32 %32, 100
   %34 = add i32 %33, 25000
