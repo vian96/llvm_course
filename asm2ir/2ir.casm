@@ -15,13 +15,9 @@ sgt r30 r12 0
 and r0 r0 r30
 # r0 is if pnt is good
 
-#print 1336
 brc r0 :velcs :rest
 
 :rest
-# print r11
-# print r12
-print 1337
 rand r1
 mod r1 r1 700
 div r1 r1 3
@@ -33,8 +29,6 @@ div r2 r2 3
 add r2 r2 250
 mul r2 r2 100
 
-# print r1
-# print r2
 # additional velcs for debug
 mul r6 250 r1
 mul r30 r1 r2 
@@ -46,10 +40,6 @@ div r7 r7 100
 mul r31 350 r2
 sub r7 r7 r31
 div r7 r7 10000
-print 88
-print r6
-print r7
-
 
 
 :velcs
@@ -65,9 +55,6 @@ div r7 r7 100
 mul r31 350 r2
 sub r7 r7 r31
 div r7 r7 10000
-# rint 88
-# print r6
-# print r7
 
 # r11 x/dec r12 y/dec 
 div r11 r1 100
@@ -90,14 +77,10 @@ mul r17 r7 -1
 :v2ok
 add r5 r16 r17
 and r5 r5 255
-#print r5
 
 # r11=x r12=y r3=xl r4=yl r5=vabs also uses r30=xt r31=yt
 # r29=step r28=col
 
-print 777
-print r3
-print r4
 mov r29 0
 :step
 mul r30 r3 r29
@@ -118,14 +101,9 @@ and r0 r0 r20
 sgt r20 r31 0
 and r0 r0 r20
 # r0 is if pnt is good
-# print r0
-# print r0
-# print r0
-# print r0
 brc r0 :okput :nokput
 
 :okput
-#print 69
 putpix r30 r31 r28
 :nokput
 add r29 r29 1
@@ -137,11 +115,6 @@ flush
 
 add r1 r1 r6
 add r2 r2 r7
-
-print 420
-print r1
-print r2
-
 
 jmp :app
 
