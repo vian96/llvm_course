@@ -1,3 +1,5 @@
+#include "../graph/sim.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -21,7 +23,7 @@ using std::string_view;
 
 using namespace llvm;
 
-const int REG_FILE_SIZE = 32;
+const int REG_FILE_SIZE = 128;
 uint32_t REG_FILE[REG_FILE_SIZE];
 
 bool ichar_equals(char a, char b) {
@@ -64,6 +66,7 @@ int main (int argc, char *argv[]) {
         std::cerr << "error openning file\n";
         return 1;
     }
+    outs() << "start\n";
 
     // init llvm
     LLVMContext context;
@@ -104,23 +107,44 @@ int main (int argc, char *argv[]) {
     FunctionCallee simFlushFunc =
       module->getOrInsertFunction("simFlush", simFlushType);
 
+    FunctionType *randFuncType = FunctionType::get(builder.getInt32Ty(), false);
+    Function *randFunc =
+        Function::Create(randFuncType, Function::ExternalLinkage, "rand", module);
+
+
+    outs() << "bbs\n";
+
     // init basic blocks
     std::unordered_map<std::string, BasicBlock *> BBMap;
     while (std::getline(f_in, line)) {
+        outs() << "before ext\n";
         const auto &words = extract_words(line);
-        if (words[0][0] == ':')
+        if (words.size() == 0)
+            continue;
+        outs() << "after ext " << words[0] << '\n';
+        if (words[0][0] == ':') {
+            outs() << words[0] << '\n';
             BBMap[words[0]] = BasicBlock::Create(context, words[0], mainFunc);
+        }
+        outs() << "after insrt\n";
     }
 
+    outs() << "after bbs\n";
     // Reset cursor position to the beginning
     f_in.clear(); // Clear EOF flag
     f_in.seekg(0, std::ios::beg);
 
+    bool last_was_br = false;
     // main parse
     while (std::getline(f_in, line)) {
+        outs() << "line\n";
+        if (line[0] == '#')
+            continue;
         const auto &words = extract_words(line);
+        if (words.size() == 0)
+            continue;
         if (words[0][0] == ':') {
-            if (builder.GetInsertBlock()) {
+            if (builder.GetInsertBlock() and !last_was_br) {
                 builder.CreateBr(BBMap[words[0]]);
                 outs() << "\tbranch to " << words[0] << "\n";
             }
@@ -129,6 +153,7 @@ int main (int argc, char *argv[]) {
             continue;
         }
         outs() << "not a word!\n";
+        last_was_br = false;
 
         // pair of <ptr, value> when possible
         std::vector<std::pair<Value*, Value*>> args;
@@ -143,8 +168,8 @@ int main (int argc, char *argv[]) {
             } else if (word[0] == ':') {
                 arg.first = BBMap[word];
             } else { // supposed to be int
-                outs() << "number " << std::stoi(word) << '\n';
-                arg.second = builder.getInt32(std::stoi(word));
+                outs() << "number " << std::stoll(word) << '\n';
+                arg.second = builder.getInt32(std::stoll(word));
             }
             args.push_back(arg);
         }
@@ -175,16 +200,32 @@ int main (int argc, char *argv[]) {
         BINOP(SLT, ICmpSLT)
         BINOP(SGE, ICmpSGE)
         BINOP(SGT, ICmpSGT)
+        BINOP(MOD, URem)
         } else if (iequals("JMP", words[0])) {
             builder.CreateBr(BBMap[words[1]]);
+            last_was_br = true;
+            // builder.SetInsertPoint(BBMap[words[3]]);
         } else if (iequals("BRC", words[0])) {
-            builder.CreateCondBr(args[2].second, BBMap[words[1]], BBMap[words[2]]);
+            builder.CreateCondBr(builder.CreateTrunc(
+                args[0].second, builder.getInt1Ty()), BBMap[words[2]], BBMap[words[3]]
+            );
+            last_was_br = true;
+//            builder.SetInsertPoint(BBMap[words[3]]);
         } else if (iequals("RET", words[0])) {
             builder.CreateRetVoid();
         } else if (iequals("PRINT", words[0])) {
             outs() << "print\n";
             Value *callargs[] = {args[0].second};
             builder.CreateCall(printFunc, callargs);
+        } else if (iequals("RAND", words[0])) {
+            outs() << "rand\n";
+            Value *randRes = builder.CreateCall(randFunc);
+            builder.CreateStore(randRes, args[0].first);
+        } else if (iequals("FLUSH", words[0])) {
+            builder.CreateCall(simFlushFunc);
+        } else if (iequals("PUTPIX", words[0])) {
+            Value *callargs[] = {args[0].second, args[1].second, args[2].second};
+            builder.CreateCall(simPutPixelFunc, callargs);
         } else {
             outs() << "unknown instr " << words[0] << '\n';
         }
@@ -201,28 +242,26 @@ int main (int argc, char *argv[]) {
   
     ExecutionEngine *ee = EngineBuilder(std::unique_ptr<Module>(module)).create();
     ee->InstallLazyFunctionCreator([=](const std::string &fnName) -> void * {
-        outs() << fnName << '\n';
         if (fnName == "print") {
-            outs() << "printtt\n";
             return reinterpret_cast<void *>(print);
+        } else if (fnName == "simFlush") {
+          return reinterpret_cast<void *>(simFlush);
+        } else if (fnName == "simPutPixel") {
+          return reinterpret_cast<void *>(simPutPixel);
+        } else if (fnName == "rand") {
+          return reinterpret_cast<void *>(simRand);
         }
-        outs() << fnName << '\n';
-       // if (fnName == "simFlush") {
-       //   return reinterpret_cast<void *>(simFlush);
-       // }
-       // if (fnName == "simPutPixel") {
-       //   return reinterpret_cast<void *>(simPutPixel);
-       // }
         return nullptr;
     });
+
     ee->finalizeObject();
+    simInit();
+
     ArrayRef<GenericValue> noargs;
     ee->runFunction(mainFunc, noargs);
     outs() << "#[Code was run]\n";
-  
-    return EXIT_SUCCESS;
-  
-    printf("\nDONE\n");
+
+    simExit();
     return 0;
 }
 

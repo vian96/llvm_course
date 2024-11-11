@@ -1,0 +1,148 @@
+:main
+:app
+# r1=x r2=y
+
+div r11 r1 100
+div r12 r2 100
+
+# checks if good pnt
+slt r0 r12 500
+slt r30 r11 700
+and r0 r0 r30
+sgt r30 r11 0
+and r0 r0 r30
+sgt r30 r12 0
+and r0 r0 r30
+# r0 is if pnt is good
+
+#print 1336
+brc r0 :velcs :rest
+
+:rest
+# print r11
+# print r12
+print 1337
+rand r1
+mod r1 r1 700
+div r1 r1 3
+add r1 r1 350
+mul r1 r1 100
+rand r2
+mod r2 r2 500
+div r2 r2 3
+add r2 r2 250
+mul r2 r2 100
+
+# print r1
+# print r2
+# additional velcs for debug
+mul r6 250 r1
+mul r30 r1 r2 
+div r30 r30 100
+sub r6 r6 r30
+div r6 r6 10000
+mul r7 r1 r2 
+div r7 r7 100
+mul r31 350 r2
+sub r7 r7 r31
+div r7 r7 10000
+print 88
+print r6
+print r7
+
+
+
+:velcs
+# calculate velcs
+# r6=v1 r7=v2
+mul r6 250 r1
+mul r30 r1 r2 
+div r30 r30 100
+sub r6 r6 r30
+div r6 r6 10000
+mul r7 r1 r2 
+div r7 r7 100
+mul r31 350 r2
+sub r7 r7 r31
+div r7 r7 10000
+# rint 88
+# print r6
+# print r7
+
+# r11 x/dec r12 y/dec 
+div r11 r1 100
+div r12 r2 100
+div r3 r6 20
+div r4 r7 20
+
+#abs r6=v1 r7=v2 r16=absv1 r17=absv2
+mov r16 r6
+sge r0 r6 0
+brc r0 :v1ok :v1nok
+:v1nok
+mul r16 r6 -1
+:v1ok
+mov r17 r7
+sge r0 r7 0 
+brc r0 :v2ok :v2nok
+:v2nok
+mul r17 r7 -1
+:v2ok
+add r5 r16 r17
+and r5 r5 255
+#print r5
+
+# r11=x r12=y r3=xl r4=yl r5=vabs also uses r30=xt r31=yt
+# r29=step r28=col
+
+print 777
+print r3
+print r4
+mov r29 0
+:step
+mul r30 r3 r29
+add r30 r30 r11
+mul r31 r4 r29
+add r31 r31 r12
+shl r28 r5 16
+# 4278190335 = 0xFF0000FF
+add r28 r28 4278190335
+# add r28 r28 255
+
+# checks if good pnt
+slt r0 r30 700
+slt r20 r31 500
+and r0 r0 r20
+sgt r20 r30 0
+and r0 r0 r20
+sgt r20 r31 0
+and r0 r0 r20
+# r0 is if pnt is good
+# print r0
+# print r0
+# print r0
+# print r0
+brc r0 :okput :nokput
+
+:okput
+#print 69
+putpix r30 r31 r28
+:nokput
+add r29 r29 1
+eq r0 r29 1
+brc r0 :flush :step
+
+:flush
+flush
+
+add r1 r1 r6
+add r2 r2 r7
+
+print 420
+print r1
+print r2
+
+
+jmp :app
+
+

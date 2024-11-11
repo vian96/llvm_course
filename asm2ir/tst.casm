@@ -1,6 +1,20 @@
+:main
 :run
-mov r1 23
-mov r2 67
-add r3 r1 r2
-print r3
+mov r1 0
+mov r2 0
+FLUSH
+# r1 x r2 y r3 cnt r4 res
+:inny
+mov r1 0
+add r2 r2 1
+eq r5 r2 500
+brc r5 :run :innx
+:innx
+mul r4 r1 r2
+mul r4 r4 r3
+putpix r1 r2 r4 
+add r1 r1 1
+eq r5 r1 700
+brc r5 :inny :innx
+:ret
 ret
