@@ -226,10 +226,16 @@ int main (int argc, char *argv[]) {
         } else if (iequals("PUTPIX", words[0])) {
             Value *callargs[] = {args[0].second, args[1].second, args[2].second};
             builder.CreateCall(simPutPixelFunc, callargs);
+        } else if (iequals("MULDIV", words[0])) {
+            builder.CreateStore(builder.CreateSDiv(
+                builder.CreateMul(args[1].second, args[2].second), args[3].second), 
+                args[0].first
+            );
         } else {
             outs() << "unknown instr " << words[0] << '\n';
         }
     }
+
     outs() << "\n#[LLVM IR]:n";
     module->print(outs(), nullptr);
     outs() << "\n";

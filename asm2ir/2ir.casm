@@ -29,29 +29,14 @@ div r2 r2 3
 add r2 r2 250
 mul r2 r2 100
 
-# additional velcs for debug
-mul r6 250 r1
-mul r30 r1 r2 
-div r30 r30 100
-sub r6 r6 r30
-div r6 r6 10000
-mul r7 r1 r2 
-div r7 r7 100
-mul r31 350 r2
-sub r7 r7 r31
-div r7 r7 10000
-
-
 :velcs
 # calculate velcs
 # r6=v1 r7=v2
 mul r6 250 r1
-mul r30 r1 r2 
-div r30 r30 100
+muldiv r30 r1 r2 100
 sub r6 r6 r30
 div r6 r6 10000
-mul r7 r1 r2 
-div r7 r7 100
+muldiv r7 r1 r2 100
 mul r31 350 r2
 sub r7 r7 r31
 div r7 r7 10000
