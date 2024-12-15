@@ -3,16 +3,17 @@ grammar UzhLang;
 // Parser rule
 
 program: (line|BOL)+;
-line: BOL? (function_line | while_line | if_line | else_line | assign_line | expr | return_line);
+line: (functionLine | whileLine | ifLine | elseLine | assignLine | exprLine | returnLine);
 
-function_line: DEF ID '(' (ID (',' ID)*  )? ')' ':';
-while_line: WHILE expr ':';
-if_line: IF expr ':';
-else_line: ELSE ':';
-assign_line: ID '=' expr;
-return_line: RETURN expr;
-func_call: ID '('(expr (',' expr)*  )? ')';
+functionLine: BOL? DEF ID '(' (ID (',' ID)*  )? ')' ':';
+whileLine: BOL WHILE expr ':';
+ifLine: BOL IF expr ':';
+elseLine: BOL ELSE ':';
+assignLine: BOL ID '=' expr;
+returnLine: BOL RETURN expr;
+exprLine: BOL expr;
 
+funcCall: ID '('(expr (',' expr)*  )? ')';
 expr:
 	NOT expr
 	| expr ( '*' | '/') expr
@@ -21,7 +22,7 @@ expr:
 	| expr AND expr
 	| expr OR expr
 	| '(' expr ')'
-	| func_call
+	| funcCall
 	| INT
 	| ID;
 

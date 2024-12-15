@@ -46,12 +46,12 @@ UzhLangParser::LineContext* UzhLangParser::ProgramContext::line(size_t i) {
   return getRuleContext<UzhLangParser::LineContext>(i);
 }
 
-std::vector<UzhLangParser::Empty_lineContext *> UzhLangParser::ProgramContext::empty_line() {
-  return getRuleContexts<UzhLangParser::Empty_lineContext>();
+std::vector<tree::TerminalNode *> UzhLangParser::ProgramContext::BOL() {
+  return getTokens(UzhLangParser::BOL);
 }
 
-UzhLangParser::Empty_lineContext* UzhLangParser::ProgramContext::empty_line(size_t i) {
-  return getRuleContext<UzhLangParser::Empty_lineContext>(i);
+tree::TerminalNode* UzhLangParser::ProgramContext::BOL(size_t i) {
+  return getToken(UzhLangParser::BOL, i);
 }
 
 
@@ -104,7 +104,7 @@ UzhLangParser::ProgramContext* UzhLangParser::program() {
 
       case 2: {
         setState(23);
-        empty_line();
+        match(UzhLangParser::BOL);
         break;
       }
 
@@ -112,17 +112,9 @@ UzhLangParser::ProgramContext* UzhLangParser::program() {
       setState(26); 
       _errHandler->sync(this);
       _la = _input->LA(1);
-    } while ((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & ((1ULL << UzhLangParser::T__0)
-      | (1ULL << UzhLangParser::INT)
-      | (1ULL << UzhLangParser::BOL)
-      | (1ULL << UzhLangParser::DEF)
-      | (1ULL << UzhLangParser::WHILE)
-      | (1ULL << UzhLangParser::IF)
-      | (1ULL << UzhLangParser::ELSE)
-      | (1ULL << UzhLangParser::RETURN)
-      | (1ULL << UzhLangParser::NOT)
-      | (1ULL << UzhLangParser::ID))) != 0));
+    } while (_la == UzhLangParser::BOL
+
+    || _la == UzhLangParser::DEF);
    
   }
   catch (RecognitionException &e) {
@@ -140,36 +132,32 @@ UzhLangParser::LineContext::LineContext(ParserRuleContext *parent, size_t invoki
   : ParserRuleContext(parent, invokingState) {
 }
 
-UzhLangParser::Function_lineContext* UzhLangParser::LineContext::function_line() {
-  return getRuleContext<UzhLangParser::Function_lineContext>(0);
+UzhLangParser::FunctionLineContext* UzhLangParser::LineContext::functionLine() {
+  return getRuleContext<UzhLangParser::FunctionLineContext>(0);
 }
 
-UzhLangParser::While_lineContext* UzhLangParser::LineContext::while_line() {
-  return getRuleContext<UzhLangParser::While_lineContext>(0);
+UzhLangParser::WhileLineContext* UzhLangParser::LineContext::whileLine() {
+  return getRuleContext<UzhLangParser::WhileLineContext>(0);
 }
 
-UzhLangParser::If_lineContext* UzhLangParser::LineContext::if_line() {
-  return getRuleContext<UzhLangParser::If_lineContext>(0);
+UzhLangParser::IfLineContext* UzhLangParser::LineContext::ifLine() {
+  return getRuleContext<UzhLangParser::IfLineContext>(0);
 }
 
-UzhLangParser::Else_lineContext* UzhLangParser::LineContext::else_line() {
-  return getRuleContext<UzhLangParser::Else_lineContext>(0);
+UzhLangParser::ElseLineContext* UzhLangParser::LineContext::elseLine() {
+  return getRuleContext<UzhLangParser::ElseLineContext>(0);
 }
 
-UzhLangParser::Assign_lineContext* UzhLangParser::LineContext::assign_line() {
-  return getRuleContext<UzhLangParser::Assign_lineContext>(0);
+UzhLangParser::AssignLineContext* UzhLangParser::LineContext::assignLine() {
+  return getRuleContext<UzhLangParser::AssignLineContext>(0);
 }
 
-UzhLangParser::ExprContext* UzhLangParser::LineContext::expr() {
-  return getRuleContext<UzhLangParser::ExprContext>(0);
+UzhLangParser::ExprLineContext* UzhLangParser::LineContext::exprLine() {
+  return getRuleContext<UzhLangParser::ExprLineContext>(0);
 }
 
-UzhLangParser::Return_lineContext* UzhLangParser::LineContext::return_line() {
-  return getRuleContext<UzhLangParser::Return_lineContext>(0);
-}
-
-tree::TerminalNode* UzhLangParser::LineContext::BOL() {
-  return getToken(UzhLangParser::BOL, 0);
+UzhLangParser::ReturnLineContext* UzhLangParser::LineContext::returnLine() {
+  return getRuleContext<UzhLangParser::ReturnLineContext>(0);
 }
 
 
@@ -200,63 +188,54 @@ antlrcpp::Any UzhLangParser::LineContext::accept(tree::ParseTreeVisitor *visitor
 UzhLangParser::LineContext* UzhLangParser::line() {
   LineContext *_localctx = _tracker.createInstance<LineContext>(_ctx, getState());
   enterRule(_localctx, 2, UzhLangParser::RuleLine);
-  size_t _la = 0;
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(29);
+    setState(35);
     _errHandler->sync(this);
-
-    _la = _input->LA(1);
-    if (_la == UzhLangParser::BOL) {
-      setState(28);
-      match(UzhLangParser::BOL);
-    }
-    setState(38);
-    _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx)) {
     case 1: {
-      setState(31);
-      function_line();
+      setState(28);
+      functionLine();
       break;
     }
 
     case 2: {
-      setState(32);
-      while_line();
+      setState(29);
+      whileLine();
       break;
     }
 
     case 3: {
-      setState(33);
-      if_line();
+      setState(30);
+      ifLine();
       break;
     }
 
     case 4: {
-      setState(34);
-      else_line();
+      setState(31);
+      elseLine();
       break;
     }
 
     case 5: {
-      setState(35);
-      assign_line();
+      setState(32);
+      assignLine();
       break;
     }
 
     case 6: {
-      setState(36);
-      expr(0);
+      setState(33);
+      exprLine();
       break;
     }
 
     case 7: {
-      setState(37);
-      return_line();
+      setState(34);
+      returnLine();
       break;
     }
 
@@ -272,109 +251,56 @@ UzhLangParser::LineContext* UzhLangParser::line() {
   return _localctx;
 }
 
-//----------------- Empty_lineContext ------------------------------------------------------------------
+//----------------- FunctionLineContext ------------------------------------------------------------------
 
-UzhLangParser::Empty_lineContext::Empty_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::FunctionLineContext::FunctionLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::Empty_lineContext::BOL() {
+tree::TerminalNode* UzhLangParser::FunctionLineContext::DEF() {
+  return getToken(UzhLangParser::DEF, 0);
+}
+
+std::vector<tree::TerminalNode *> UzhLangParser::FunctionLineContext::ID() {
+  return getTokens(UzhLangParser::ID);
+}
+
+tree::TerminalNode* UzhLangParser::FunctionLineContext::ID(size_t i) {
+  return getToken(UzhLangParser::ID, i);
+}
+
+tree::TerminalNode* UzhLangParser::FunctionLineContext::BOL() {
   return getToken(UzhLangParser::BOL, 0);
 }
 
 
-size_t UzhLangParser::Empty_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleEmpty_line;
+size_t UzhLangParser::FunctionLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleFunctionLine;
 }
 
-void UzhLangParser::Empty_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::FunctionLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterEmpty_line(this);
+    parserListener->enterFunctionLine(this);
 }
 
-void UzhLangParser::Empty_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::FunctionLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitEmpty_line(this);
+    parserListener->exitFunctionLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::Empty_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::FunctionLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitEmpty_line(this);
+    return parserVisitor->visitFunctionLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::Empty_lineContext* UzhLangParser::empty_line() {
-  Empty_lineContext *_localctx = _tracker.createInstance<Empty_lineContext>(_ctx, getState());
-  enterRule(_localctx, 4, UzhLangParser::RuleEmpty_line);
-
-  auto onExit = finally([=] {
-    exitRule();
-  });
-  try {
-    enterOuterAlt(_localctx, 1);
-    setState(40);
-    match(UzhLangParser::BOL);
-   
-  }
-  catch (RecognitionException &e) {
-    _errHandler->reportError(this, e);
-    _localctx->exception = std::current_exception();
-    _errHandler->recover(this, _localctx->exception);
-  }
-
-  return _localctx;
-}
-
-//----------------- Function_lineContext ------------------------------------------------------------------
-
-UzhLangParser::Function_lineContext::Function_lineContext(ParserRuleContext *parent, size_t invokingState)
-  : ParserRuleContext(parent, invokingState) {
-}
-
-tree::TerminalNode* UzhLangParser::Function_lineContext::DEF() {
-  return getToken(UzhLangParser::DEF, 0);
-}
-
-std::vector<tree::TerminalNode *> UzhLangParser::Function_lineContext::ID() {
-  return getTokens(UzhLangParser::ID);
-}
-
-tree::TerminalNode* UzhLangParser::Function_lineContext::ID(size_t i) {
-  return getToken(UzhLangParser::ID, i);
-}
-
-
-size_t UzhLangParser::Function_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleFunction_line;
-}
-
-void UzhLangParser::Function_lineContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<UzhLangListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunction_line(this);
-}
-
-void UzhLangParser::Function_lineContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<UzhLangListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunction_line(this);
-}
-
-
-antlrcpp::Any UzhLangParser::Function_lineContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitFunction_line(this);
-  else
-    return visitor->visitChildren(this);
-}
-
-UzhLangParser::Function_lineContext* UzhLangParser::function_line() {
-  Function_lineContext *_localctx = _tracker.createInstance<Function_lineContext>(_ctx, getState());
-  enterRule(_localctx, 6, UzhLangParser::RuleFunction_line);
+UzhLangParser::FunctionLineContext* UzhLangParser::functionLine() {
+  FunctionLineContext *_localctx = _tracker.createInstance<FunctionLineContext>(_ctx, getState());
+  enterRule(_localctx, 4, UzhLangParser::RuleFunctionLine);
   size_t _la = 0;
 
   auto onExit = finally([=] {
@@ -382,35 +308,43 @@ UzhLangParser::Function_lineContext* UzhLangParser::function_line() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(42);
+    setState(38);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == UzhLangParser::BOL) {
+      setState(37);
+      match(UzhLangParser::BOL);
+    }
+    setState(40);
     match(UzhLangParser::DEF);
-    setState(43);
+    setState(41);
     match(UzhLangParser::ID);
-    setState(44);
+    setState(42);
     match(UzhLangParser::T__0);
-    setState(53);
+    setState(51);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == UzhLangParser::ID) {
-      setState(45);
+      setState(43);
       match(UzhLangParser::ID);
-      setState(50);
+      setState(48);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == UzhLangParser::T__1) {
-        setState(46);
+        setState(44);
         match(UzhLangParser::T__1);
-        setState(47);
+        setState(45);
         match(UzhLangParser::ID);
-        setState(52);
+        setState(50);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
     }
-    setState(55);
+    setState(53);
     match(UzhLangParser::T__2);
-    setState(56);
+    setState(54);
     match(UzhLangParser::T__3);
    
   }
@@ -423,59 +357,65 @@ UzhLangParser::Function_lineContext* UzhLangParser::function_line() {
   return _localctx;
 }
 
-//----------------- While_lineContext ------------------------------------------------------------------
+//----------------- WhileLineContext ------------------------------------------------------------------
 
-UzhLangParser::While_lineContext::While_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::WhileLineContext::WhileLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::While_lineContext::WHILE() {
+tree::TerminalNode* UzhLangParser::WhileLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+tree::TerminalNode* UzhLangParser::WhileLineContext::WHILE() {
   return getToken(UzhLangParser::WHILE, 0);
 }
 
-UzhLangParser::ExprContext* UzhLangParser::While_lineContext::expr() {
+UzhLangParser::ExprContext* UzhLangParser::WhileLineContext::expr() {
   return getRuleContext<UzhLangParser::ExprContext>(0);
 }
 
 
-size_t UzhLangParser::While_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleWhile_line;
+size_t UzhLangParser::WhileLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleWhileLine;
 }
 
-void UzhLangParser::While_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::WhileLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterWhile_line(this);
+    parserListener->enterWhileLine(this);
 }
 
-void UzhLangParser::While_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::WhileLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitWhile_line(this);
+    parserListener->exitWhileLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::While_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::WhileLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitWhile_line(this);
+    return parserVisitor->visitWhileLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::While_lineContext* UzhLangParser::while_line() {
-  While_lineContext *_localctx = _tracker.createInstance<While_lineContext>(_ctx, getState());
-  enterRule(_localctx, 8, UzhLangParser::RuleWhile_line);
+UzhLangParser::WhileLineContext* UzhLangParser::whileLine() {
+  WhileLineContext *_localctx = _tracker.createInstance<WhileLineContext>(_ctx, getState());
+  enterRule(_localctx, 6, UzhLangParser::RuleWhileLine);
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(58);
+    setState(56);
+    match(UzhLangParser::BOL);
+    setState(57);
     match(UzhLangParser::WHILE);
-    setState(59);
+    setState(58);
     expr(0);
-    setState(60);
+    setState(59);
     match(UzhLangParser::T__3);
    
   }
@@ -488,54 +428,60 @@ UzhLangParser::While_lineContext* UzhLangParser::while_line() {
   return _localctx;
 }
 
-//----------------- If_lineContext ------------------------------------------------------------------
+//----------------- IfLineContext ------------------------------------------------------------------
 
-UzhLangParser::If_lineContext::If_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::IfLineContext::IfLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::If_lineContext::IF() {
+tree::TerminalNode* UzhLangParser::IfLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+tree::TerminalNode* UzhLangParser::IfLineContext::IF() {
   return getToken(UzhLangParser::IF, 0);
 }
 
-UzhLangParser::ExprContext* UzhLangParser::If_lineContext::expr() {
+UzhLangParser::ExprContext* UzhLangParser::IfLineContext::expr() {
   return getRuleContext<UzhLangParser::ExprContext>(0);
 }
 
 
-size_t UzhLangParser::If_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleIf_line;
+size_t UzhLangParser::IfLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleIfLine;
 }
 
-void UzhLangParser::If_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::IfLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterIf_line(this);
+    parserListener->enterIfLine(this);
 }
 
-void UzhLangParser::If_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::IfLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitIf_line(this);
+    parserListener->exitIfLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::If_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::IfLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitIf_line(this);
+    return parserVisitor->visitIfLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::If_lineContext* UzhLangParser::if_line() {
-  If_lineContext *_localctx = _tracker.createInstance<If_lineContext>(_ctx, getState());
-  enterRule(_localctx, 10, UzhLangParser::RuleIf_line);
+UzhLangParser::IfLineContext* UzhLangParser::ifLine() {
+  IfLineContext *_localctx = _tracker.createInstance<IfLineContext>(_ctx, getState());
+  enterRule(_localctx, 8, UzhLangParser::RuleIfLine);
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
+    setState(61);
+    match(UzhLangParser::BOL);
     setState(62);
     match(UzhLangParser::IF);
     setState(63);
@@ -553,44 +499,48 @@ UzhLangParser::If_lineContext* UzhLangParser::if_line() {
   return _localctx;
 }
 
-//----------------- Else_lineContext ------------------------------------------------------------------
+//----------------- ElseLineContext ------------------------------------------------------------------
 
-UzhLangParser::Else_lineContext::Else_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::ElseLineContext::ElseLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::Else_lineContext::ELSE() {
+tree::TerminalNode* UzhLangParser::ElseLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+tree::TerminalNode* UzhLangParser::ElseLineContext::ELSE() {
   return getToken(UzhLangParser::ELSE, 0);
 }
 
 
-size_t UzhLangParser::Else_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleElse_line;
+size_t UzhLangParser::ElseLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleElseLine;
 }
 
-void UzhLangParser::Else_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::ElseLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterElse_line(this);
+    parserListener->enterElseLine(this);
 }
 
-void UzhLangParser::Else_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::ElseLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitElse_line(this);
+    parserListener->exitElseLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::Else_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::ElseLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitElse_line(this);
+    return parserVisitor->visitElseLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::Else_lineContext* UzhLangParser::else_line() {
-  Else_lineContext *_localctx = _tracker.createInstance<Else_lineContext>(_ctx, getState());
-  enterRule(_localctx, 12, UzhLangParser::RuleElse_line);
+UzhLangParser::ElseLineContext* UzhLangParser::elseLine() {
+  ElseLineContext *_localctx = _tracker.createInstance<ElseLineContext>(_ctx, getState());
+  enterRule(_localctx, 10, UzhLangParser::RuleElseLine);
 
   auto onExit = finally([=] {
     exitRule();
@@ -598,8 +548,10 @@ UzhLangParser::Else_lineContext* UzhLangParser::else_line() {
   try {
     enterOuterAlt(_localctx, 1);
     setState(66);
-    match(UzhLangParser::ELSE);
+    match(UzhLangParser::BOL);
     setState(67);
+    match(UzhLangParser::ELSE);
+    setState(68);
     match(UzhLangParser::T__3);
    
   }
@@ -612,59 +564,65 @@ UzhLangParser::Else_lineContext* UzhLangParser::else_line() {
   return _localctx;
 }
 
-//----------------- Assign_lineContext ------------------------------------------------------------------
+//----------------- AssignLineContext ------------------------------------------------------------------
 
-UzhLangParser::Assign_lineContext::Assign_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::AssignLineContext::AssignLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::Assign_lineContext::ID() {
+tree::TerminalNode* UzhLangParser::AssignLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+tree::TerminalNode* UzhLangParser::AssignLineContext::ID() {
   return getToken(UzhLangParser::ID, 0);
 }
 
-UzhLangParser::ExprContext* UzhLangParser::Assign_lineContext::expr() {
+UzhLangParser::ExprContext* UzhLangParser::AssignLineContext::expr() {
   return getRuleContext<UzhLangParser::ExprContext>(0);
 }
 
 
-size_t UzhLangParser::Assign_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleAssign_line;
+size_t UzhLangParser::AssignLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleAssignLine;
 }
 
-void UzhLangParser::Assign_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::AssignLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterAssign_line(this);
+    parserListener->enterAssignLine(this);
 }
 
-void UzhLangParser::Assign_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::AssignLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitAssign_line(this);
+    parserListener->exitAssignLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::Assign_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::AssignLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitAssign_line(this);
+    return parserVisitor->visitAssignLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::Assign_lineContext* UzhLangParser::assign_line() {
-  Assign_lineContext *_localctx = _tracker.createInstance<Assign_lineContext>(_ctx, getState());
-  enterRule(_localctx, 14, UzhLangParser::RuleAssign_line);
+UzhLangParser::AssignLineContext* UzhLangParser::assignLine() {
+  AssignLineContext *_localctx = _tracker.createInstance<AssignLineContext>(_ctx, getState());
+  enterRule(_localctx, 12, UzhLangParser::RuleAssignLine);
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(69);
-    match(UzhLangParser::ID);
     setState(70);
-    match(UzhLangParser::T__4);
+    match(UzhLangParser::BOL);
     setState(71);
+    match(UzhLangParser::ID);
+    setState(72);
+    match(UzhLangParser::T__4);
+    setState(73);
     expr(0);
    
   }
@@ -677,57 +635,63 @@ UzhLangParser::Assign_lineContext* UzhLangParser::assign_line() {
   return _localctx;
 }
 
-//----------------- Return_lineContext ------------------------------------------------------------------
+//----------------- ReturnLineContext ------------------------------------------------------------------
 
-UzhLangParser::Return_lineContext::Return_lineContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::ReturnLineContext::ReturnLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::Return_lineContext::RETURN() {
+tree::TerminalNode* UzhLangParser::ReturnLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+tree::TerminalNode* UzhLangParser::ReturnLineContext::RETURN() {
   return getToken(UzhLangParser::RETURN, 0);
 }
 
-UzhLangParser::ExprContext* UzhLangParser::Return_lineContext::expr() {
+UzhLangParser::ExprContext* UzhLangParser::ReturnLineContext::expr() {
   return getRuleContext<UzhLangParser::ExprContext>(0);
 }
 
 
-size_t UzhLangParser::Return_lineContext::getRuleIndex() const {
-  return UzhLangParser::RuleReturn_line;
+size_t UzhLangParser::ReturnLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleReturnLine;
 }
 
-void UzhLangParser::Return_lineContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::ReturnLineContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterReturn_line(this);
+    parserListener->enterReturnLine(this);
 }
 
-void UzhLangParser::Return_lineContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::ReturnLineContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitReturn_line(this);
+    parserListener->exitReturnLine(this);
 }
 
 
-antlrcpp::Any UzhLangParser::Return_lineContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::ReturnLineContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitReturn_line(this);
+    return parserVisitor->visitReturnLine(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::Return_lineContext* UzhLangParser::return_line() {
-  Return_lineContext *_localctx = _tracker.createInstance<Return_lineContext>(_ctx, getState());
-  enterRule(_localctx, 16, UzhLangParser::RuleReturn_line);
+UzhLangParser::ReturnLineContext* UzhLangParser::returnLine() {
+  ReturnLineContext *_localctx = _tracker.createInstance<ReturnLineContext>(_ctx, getState());
+  enterRule(_localctx, 14, UzhLangParser::RuleReturnLine);
 
   auto onExit = finally([=] {
     exitRule();
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(73);
+    setState(75);
+    match(UzhLangParser::BOL);
+    setState(76);
     match(UzhLangParser::RETURN);
-    setState(74);
+    setState(77);
     expr(0);
    
   }
@@ -740,52 +704,115 @@ UzhLangParser::Return_lineContext* UzhLangParser::return_line() {
   return _localctx;
 }
 
-//----------------- Func_callContext ------------------------------------------------------------------
+//----------------- ExprLineContext ------------------------------------------------------------------
 
-UzhLangParser::Func_callContext::Func_callContext(ParserRuleContext *parent, size_t invokingState)
+UzhLangParser::ExprLineContext::ExprLineContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* UzhLangParser::Func_callContext::ID() {
+tree::TerminalNode* UzhLangParser::ExprLineContext::BOL() {
+  return getToken(UzhLangParser::BOL, 0);
+}
+
+UzhLangParser::ExprContext* UzhLangParser::ExprLineContext::expr() {
+  return getRuleContext<UzhLangParser::ExprContext>(0);
+}
+
+
+size_t UzhLangParser::ExprLineContext::getRuleIndex() const {
+  return UzhLangParser::RuleExprLine;
+}
+
+void UzhLangParser::ExprLineContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<UzhLangListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterExprLine(this);
+}
+
+void UzhLangParser::ExprLineContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<UzhLangListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitExprLine(this);
+}
+
+
+antlrcpp::Any UzhLangParser::ExprLineContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
+    return parserVisitor->visitExprLine(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+UzhLangParser::ExprLineContext* UzhLangParser::exprLine() {
+  ExprLineContext *_localctx = _tracker.createInstance<ExprLineContext>(_ctx, getState());
+  enterRule(_localctx, 16, UzhLangParser::RuleExprLine);
+
+  auto onExit = finally([=] {
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(79);
+    match(UzhLangParser::BOL);
+    setState(80);
+    expr(0);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- FuncCallContext ------------------------------------------------------------------
+
+UzhLangParser::FuncCallContext::FuncCallContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* UzhLangParser::FuncCallContext::ID() {
   return getToken(UzhLangParser::ID, 0);
 }
 
-std::vector<UzhLangParser::ExprContext *> UzhLangParser::Func_callContext::expr() {
+std::vector<UzhLangParser::ExprContext *> UzhLangParser::FuncCallContext::expr() {
   return getRuleContexts<UzhLangParser::ExprContext>();
 }
 
-UzhLangParser::ExprContext* UzhLangParser::Func_callContext::expr(size_t i) {
+UzhLangParser::ExprContext* UzhLangParser::FuncCallContext::expr(size_t i) {
   return getRuleContext<UzhLangParser::ExprContext>(i);
 }
 
 
-size_t UzhLangParser::Func_callContext::getRuleIndex() const {
-  return UzhLangParser::RuleFunc_call;
+size_t UzhLangParser::FuncCallContext::getRuleIndex() const {
+  return UzhLangParser::RuleFuncCall;
 }
 
-void UzhLangParser::Func_callContext::enterRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::FuncCallContext::enterRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->enterFunc_call(this);
+    parserListener->enterFuncCall(this);
 }
 
-void UzhLangParser::Func_callContext::exitRule(tree::ParseTreeListener *listener) {
+void UzhLangParser::FuncCallContext::exitRule(tree::ParseTreeListener *listener) {
   auto parserListener = dynamic_cast<UzhLangListener *>(listener);
   if (parserListener != nullptr)
-    parserListener->exitFunc_call(this);
+    parserListener->exitFuncCall(this);
 }
 
 
-antlrcpp::Any UzhLangParser::Func_callContext::accept(tree::ParseTreeVisitor *visitor) {
+antlrcpp::Any UzhLangParser::FuncCallContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<UzhLangVisitor*>(visitor))
-    return parserVisitor->visitFunc_call(this);
+    return parserVisitor->visitFuncCall(this);
   else
     return visitor->visitChildren(this);
 }
 
-UzhLangParser::Func_callContext* UzhLangParser::func_call() {
-  Func_callContext *_localctx = _tracker.createInstance<Func_callContext>(_ctx, getState());
-  enterRule(_localctx, 18, UzhLangParser::RuleFunc_call);
+UzhLangParser::FuncCallContext* UzhLangParser::funcCall() {
+  FuncCallContext *_localctx = _tracker.createInstance<FuncCallContext>(_ctx, getState());
+  enterRule(_localctx, 18, UzhLangParser::RuleFuncCall);
   size_t _la = 0;
 
   auto onExit = finally([=] {
@@ -793,11 +820,11 @@ UzhLangParser::Func_callContext* UzhLangParser::func_call() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(76);
+    setState(82);
     match(UzhLangParser::ID);
-    setState(77);
+    setState(83);
     match(UzhLangParser::T__0);
-    setState(86);
+    setState(92);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
@@ -806,22 +833,22 @@ UzhLangParser::Func_callContext* UzhLangParser::func_call() {
       | (1ULL << UzhLangParser::INT)
       | (1ULL << UzhLangParser::NOT)
       | (1ULL << UzhLangParser::ID))) != 0)) {
-      setState(78);
+      setState(84);
       expr(0);
-      setState(83);
+      setState(89);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == UzhLangParser::T__1) {
-        setState(79);
-        match(UzhLangParser::T__1);
-        setState(80);
-        expr(0);
         setState(85);
+        match(UzhLangParser::T__1);
+        setState(86);
+        expr(0);
+        setState(91);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
     }
-    setState(88);
+    setState(94);
     match(UzhLangParser::T__2);
    
   }
@@ -852,8 +879,8 @@ UzhLangParser::ExprContext* UzhLangParser::ExprContext::expr(size_t i) {
   return getRuleContext<UzhLangParser::ExprContext>(i);
 }
 
-UzhLangParser::Func_callContext* UzhLangParser::ExprContext::func_call() {
-  return getRuleContext<UzhLangParser::Func_callContext>(0);
+UzhLangParser::FuncCallContext* UzhLangParser::ExprContext::funcCall() {
+  return getRuleContext<UzhLangParser::FuncCallContext>(0);
 }
 
 tree::TerminalNode* UzhLangParser::ExprContext::INT() {
@@ -923,48 +950,48 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(100);
+    setState(106);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx)) {
     case 1: {
-      setState(91);
+      setState(97);
       match(UzhLangParser::NOT);
-      setState(92);
+      setState(98);
       expr(10);
       break;
     }
 
     case 2: {
-      setState(93);
+      setState(99);
       match(UzhLangParser::T__0);
-      setState(94);
+      setState(100);
       expr(0);
-      setState(95);
+      setState(101);
       match(UzhLangParser::T__2);
       break;
     }
 
     case 3: {
-      setState(97);
-      func_call();
+      setState(103);
+      funcCall();
       break;
     }
 
     case 4: {
-      setState(98);
+      setState(104);
       match(UzhLangParser::INT);
       break;
     }
 
     case 5: {
-      setState(99);
+      setState(105);
       match(UzhLangParser::ID);
       break;
     }
 
     }
     _ctx->stop = _input->LT(-1);
-    setState(119);
+    setState(125);
     _errHandler->sync(this);
     alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
@@ -972,16 +999,16 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(117);
+        setState(123);
         _errHandler->sync(this);
         switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 9, _ctx)) {
         case 1: {
           _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
           pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(102);
+          setState(108);
 
           if (!(precpred(_ctx, 9))) throw FailedPredicateException(this, "precpred(_ctx, 9)");
-          setState(103);
+          setState(109);
           _la = _input->LA(1);
           if (!(_la == UzhLangParser::T__5
 
@@ -992,7 +1019,7 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(104);
+          setState(110);
           expr(10);
           break;
         }
@@ -1000,10 +1027,10 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
         case 2: {
           _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
           pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(105);
+          setState(111);
 
           if (!(precpred(_ctx, 8))) throw FailedPredicateException(this, "precpred(_ctx, 8)");
-          setState(106);
+          setState(112);
           _la = _input->LA(1);
           if (!(_la == UzhLangParser::T__7
 
@@ -1014,7 +1041,7 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(107);
+          setState(113);
           expr(9);
           break;
         }
@@ -1022,12 +1049,12 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
         case 3: {
           _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
           pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(108);
+          setState(114);
 
           if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
-          setState(109);
+          setState(115);
           match(UzhLangParser::COMP);
-          setState(110);
+          setState(116);
           expr(8);
           break;
         }
@@ -1035,12 +1062,12 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
         case 4: {
           _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
           pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(111);
+          setState(117);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(112);
+          setState(118);
           match(UzhLangParser::AND);
-          setState(113);
+          setState(119);
           expr(7);
           break;
         }
@@ -1048,19 +1075,19 @@ UzhLangParser::ExprContext* UzhLangParser::expr(int precedence) {
         case 5: {
           _localctx = _tracker.createInstance<ExprContext>(parentContext, parentState);
           pushNewRecursionContext(_localctx, startState, RuleExpr);
-          setState(114);
+          setState(120);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(115);
+          setState(121);
           match(UzhLangParser::OR);
-          setState(116);
+          setState(122);
           expr(6);
           break;
         }
 
         } 
       }
-      setState(121);
+      setState(127);
       _errHandler->sync(this);
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx);
     }
@@ -1106,8 +1133,8 @@ atn::ATN UzhLangParser::_atn;
 std::vector<uint16_t> UzhLangParser::_serializedATN;
 
 std::vector<std::string> UzhLangParser::_ruleNames = {
-  "program", "line", "empty_line", "function_line", "while_line", "if_line", 
-  "else_line", "assign_line", "return_line", "func_call", "expr"
+  "program", "line", "functionLine", "whileLine", "ifLine", "elseLine", 
+  "assignLine", "returnLine", "exprLine", "funcCall", "expr"
 };
 
 std::vector<std::string> UzhLangParser::_literalNames = {
@@ -1140,89 +1167,93 @@ UzhLangParser::Initializer::Initializer() {
 
   _serializedATN = {
     0x3, 0x608b, 0xa72a, 0x8133, 0xb9ed, 0x417c, 0x3be7, 0x7786, 0x5964, 
-    0x3, 0x19, 0x7d, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 0x9, 
+    0x3, 0x19, 0x83, 0x4, 0x2, 0x9, 0x2, 0x4, 0x3, 0x9, 0x3, 0x4, 0x4, 0x9, 
     0x4, 0x4, 0x5, 0x9, 0x5, 0x4, 0x6, 0x9, 0x6, 0x4, 0x7, 0x9, 0x7, 0x4, 
     0x8, 0x9, 0x8, 0x4, 0x9, 0x9, 0x9, 0x4, 0xa, 0x9, 0xa, 0x4, 0xb, 0x9, 
     0xb, 0x4, 0xc, 0x9, 0xc, 0x3, 0x2, 0x3, 0x2, 0x6, 0x2, 0x1b, 0xa, 0x2, 
-    0xd, 0x2, 0xe, 0x2, 0x1c, 0x3, 0x3, 0x5, 0x3, 0x20, 0xa, 0x3, 0x3, 0x3, 
-    0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x5, 0x3, 
-    0x29, 0xa, 0x3, 0x3, 0x4, 0x3, 0x4, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 
-    0x5, 0x3, 0x5, 0x3, 0x5, 0x7, 0x5, 0x33, 0xa, 0x5, 0xc, 0x5, 0xe, 0x5, 
-    0x36, 0xb, 0x5, 0x5, 0x5, 0x38, 0xa, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 
-    0x3, 0x6, 0x3, 0x6, 0x3, 0x6, 0x3, 0x6, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 
-    0x3, 0x7, 0x3, 0x8, 0x3, 0x8, 0x3, 0x8, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 
-    0x3, 0x9, 0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x3, 0xb, 0x3, 0xb, 0x3, 0xb, 
-    0x3, 0xb, 0x3, 0xb, 0x7, 0xb, 0x54, 0xa, 0xb, 0xc, 0xb, 0xe, 0xb, 0x57, 
-    0xb, 0xb, 0x5, 0xb, 0x59, 0xa, 0xb, 0x3, 0xb, 0x3, 0xb, 0x3, 0xc, 0x3, 
+    0xd, 0x2, 0xe, 0x2, 0x1c, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 
+    0x3, 0x3, 0x3, 0x3, 0x3, 0x5, 0x3, 0x26, 0xa, 0x3, 0x3, 0x4, 0x5, 0x4, 
+    0x29, 0xa, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 
+    0x4, 0x7, 0x4, 0x31, 0xa, 0x4, 0xc, 0x4, 0xe, 0x4, 0x34, 0xb, 0x4, 0x5, 
+    0x4, 0x36, 0xa, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 0x4, 0x3, 0x5, 0x3, 0x5, 
+    0x3, 0x5, 0x3, 0x5, 0x3, 0x5, 0x3, 0x6, 0x3, 0x6, 0x3, 0x6, 0x3, 0x6, 
+    0x3, 0x6, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x7, 0x3, 0x8, 0x3, 0x8, 
+    0x3, 0x8, 0x3, 0x8, 0x3, 0x8, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 0x3, 0x9, 
+    0x3, 0xa, 0x3, 0xa, 0x3, 0xa, 0x3, 0xb, 0x3, 0xb, 0x3, 0xb, 0x3, 0xb, 
+    0x3, 0xb, 0x7, 0xb, 0x5a, 0xa, 0xb, 0xc, 0xb, 0xe, 0xb, 0x5d, 0xb, 0xb, 
+    0x5, 0xb, 0x5f, 0xa, 0xb, 0x3, 0xb, 0x3, 0xb, 0x3, 0xc, 0x3, 0xc, 0x3, 
     0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 
-    0xc, 0x3, 0xc, 0x5, 0xc, 0x67, 0xa, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 
+    0xc, 0x5, 0xc, 0x6d, 0xa, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 
     0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 
-    0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x7, 0xc, 0x78, 0xa, 
-    0xc, 0xc, 0xc, 0xe, 0xc, 0x7b, 0xb, 0xc, 0x3, 0xc, 0x2, 0x3, 0x16, 0xd, 
-    0x2, 0x4, 0x6, 0x8, 0xa, 0xc, 0xe, 0x10, 0x12, 0x14, 0x16, 0x2, 0x4, 
-    0x3, 0x2, 0x8, 0x9, 0x3, 0x2, 0xa, 0xb, 0x2, 0x87, 0x2, 0x1a, 0x3, 0x2, 
-    0x2, 0x2, 0x4, 0x1f, 0x3, 0x2, 0x2, 0x2, 0x6, 0x2a, 0x3, 0x2, 0x2, 0x2, 
-    0x8, 0x2c, 0x3, 0x2, 0x2, 0x2, 0xa, 0x3c, 0x3, 0x2, 0x2, 0x2, 0xc, 0x40, 
-    0x3, 0x2, 0x2, 0x2, 0xe, 0x44, 0x3, 0x2, 0x2, 0x2, 0x10, 0x47, 0x3, 
-    0x2, 0x2, 0x2, 0x12, 0x4b, 0x3, 0x2, 0x2, 0x2, 0x14, 0x4e, 0x3, 0x2, 
-    0x2, 0x2, 0x16, 0x66, 0x3, 0x2, 0x2, 0x2, 0x18, 0x1b, 0x5, 0x4, 0x3, 
-    0x2, 0x19, 0x1b, 0x5, 0x6, 0x4, 0x2, 0x1a, 0x18, 0x3, 0x2, 0x2, 0x2, 
-    0x1a, 0x19, 0x3, 0x2, 0x2, 0x2, 0x1b, 0x1c, 0x3, 0x2, 0x2, 0x2, 0x1c, 
-    0x1a, 0x3, 0x2, 0x2, 0x2, 0x1c, 0x1d, 0x3, 0x2, 0x2, 0x2, 0x1d, 0x3, 
-    0x3, 0x2, 0x2, 0x2, 0x1e, 0x20, 0x7, 0xe, 0x2, 0x2, 0x1f, 0x1e, 0x3, 
-    0x2, 0x2, 0x2, 0x1f, 0x20, 0x3, 0x2, 0x2, 0x2, 0x20, 0x28, 0x3, 0x2, 
-    0x2, 0x2, 0x21, 0x29, 0x5, 0x8, 0x5, 0x2, 0x22, 0x29, 0x5, 0xa, 0x6, 
-    0x2, 0x23, 0x29, 0x5, 0xc, 0x7, 0x2, 0x24, 0x29, 0x5, 0xe, 0x8, 0x2, 
-    0x25, 0x29, 0x5, 0x10, 0x9, 0x2, 0x26, 0x29, 0x5, 0x16, 0xc, 0x2, 0x27, 
-    0x29, 0x5, 0x12, 0xa, 0x2, 0x28, 0x21, 0x3, 0x2, 0x2, 0x2, 0x28, 0x22, 
-    0x3, 0x2, 0x2, 0x2, 0x28, 0x23, 0x3, 0x2, 0x2, 0x2, 0x28, 0x24, 0x3, 
-    0x2, 0x2, 0x2, 0x28, 0x25, 0x3, 0x2, 0x2, 0x2, 0x28, 0x26, 0x3, 0x2, 
-    0x2, 0x2, 0x28, 0x27, 0x3, 0x2, 0x2, 0x2, 0x29, 0x5, 0x3, 0x2, 0x2, 
-    0x2, 0x2a, 0x2b, 0x7, 0xe, 0x2, 0x2, 0x2b, 0x7, 0x3, 0x2, 0x2, 0x2, 
-    0x2c, 0x2d, 0x7, 0x10, 0x2, 0x2, 0x2d, 0x2e, 0x7, 0x19, 0x2, 0x2, 0x2e, 
-    0x37, 0x7, 0x3, 0x2, 0x2, 0x2f, 0x34, 0x7, 0x19, 0x2, 0x2, 0x30, 0x31, 
-    0x7, 0x4, 0x2, 0x2, 0x31, 0x33, 0x7, 0x19, 0x2, 0x2, 0x32, 0x30, 0x3, 
-    0x2, 0x2, 0x2, 0x33, 0x36, 0x3, 0x2, 0x2, 0x2, 0x34, 0x32, 0x3, 0x2, 
-    0x2, 0x2, 0x34, 0x35, 0x3, 0x2, 0x2, 0x2, 0x35, 0x38, 0x3, 0x2, 0x2, 
-    0x2, 0x36, 0x34, 0x3, 0x2, 0x2, 0x2, 0x37, 0x2f, 0x3, 0x2, 0x2, 0x2, 
-    0x37, 0x38, 0x3, 0x2, 0x2, 0x2, 0x38, 0x39, 0x3, 0x2, 0x2, 0x2, 0x39, 
-    0x3a, 0x7, 0x5, 0x2, 0x2, 0x3a, 0x3b, 0x7, 0x6, 0x2, 0x2, 0x3b, 0x9, 
-    0x3, 0x2, 0x2, 0x2, 0x3c, 0x3d, 0x7, 0x11, 0x2, 0x2, 0x3d, 0x3e, 0x5, 
-    0x16, 0xc, 0x2, 0x3e, 0x3f, 0x7, 0x6, 0x2, 0x2, 0x3f, 0xb, 0x3, 0x2, 
-    0x2, 0x2, 0x40, 0x41, 0x7, 0x12, 0x2, 0x2, 0x41, 0x42, 0x5, 0x16, 0xc, 
-    0x2, 0x42, 0x43, 0x7, 0x6, 0x2, 0x2, 0x43, 0xd, 0x3, 0x2, 0x2, 0x2, 
-    0x44, 0x45, 0x7, 0x13, 0x2, 0x2, 0x45, 0x46, 0x7, 0x6, 0x2, 0x2, 0x46, 
-    0xf, 0x3, 0x2, 0x2, 0x2, 0x47, 0x48, 0x7, 0x19, 0x2, 0x2, 0x48, 0x49, 
-    0x7, 0x7, 0x2, 0x2, 0x49, 0x4a, 0x5, 0x16, 0xc, 0x2, 0x4a, 0x11, 0x3, 
-    0x2, 0x2, 0x2, 0x4b, 0x4c, 0x7, 0x14, 0x2, 0x2, 0x4c, 0x4d, 0x5, 0x16, 
-    0xc, 0x2, 0x4d, 0x13, 0x3, 0x2, 0x2, 0x2, 0x4e, 0x4f, 0x7, 0x19, 0x2, 
-    0x2, 0x4f, 0x58, 0x7, 0x3, 0x2, 0x2, 0x50, 0x55, 0x5, 0x16, 0xc, 0x2, 
-    0x51, 0x52, 0x7, 0x4, 0x2, 0x2, 0x52, 0x54, 0x5, 0x16, 0xc, 0x2, 0x53, 
-    0x51, 0x3, 0x2, 0x2, 0x2, 0x54, 0x57, 0x3, 0x2, 0x2, 0x2, 0x55, 0x53, 
-    0x3, 0x2, 0x2, 0x2, 0x55, 0x56, 0x3, 0x2, 0x2, 0x2, 0x56, 0x59, 0x3, 
-    0x2, 0x2, 0x2, 0x57, 0x55, 0x3, 0x2, 0x2, 0x2, 0x58, 0x50, 0x3, 0x2, 
-    0x2, 0x2, 0x58, 0x59, 0x3, 0x2, 0x2, 0x2, 0x59, 0x5a, 0x3, 0x2, 0x2, 
-    0x2, 0x5a, 0x5b, 0x7, 0x5, 0x2, 0x2, 0x5b, 0x15, 0x3, 0x2, 0x2, 0x2, 
-    0x5c, 0x5d, 0x8, 0xc, 0x1, 0x2, 0x5d, 0x5e, 0x7, 0x18, 0x2, 0x2, 0x5e, 
-    0x67, 0x5, 0x16, 0xc, 0xc, 0x5f, 0x60, 0x7, 0x3, 0x2, 0x2, 0x60, 0x61, 
-    0x5, 0x16, 0xc, 0x2, 0x61, 0x62, 0x7, 0x5, 0x2, 0x2, 0x62, 0x67, 0x3, 
-    0x2, 0x2, 0x2, 0x63, 0x67, 0x5, 0x14, 0xb, 0x2, 0x64, 0x67, 0x7, 0xc, 
-    0x2, 0x2, 0x65, 0x67, 0x7, 0x19, 0x2, 0x2, 0x66, 0x5c, 0x3, 0x2, 0x2, 
-    0x2, 0x66, 0x5f, 0x3, 0x2, 0x2, 0x2, 0x66, 0x63, 0x3, 0x2, 0x2, 0x2, 
-    0x66, 0x64, 0x3, 0x2, 0x2, 0x2, 0x66, 0x65, 0x3, 0x2, 0x2, 0x2, 0x67, 
-    0x79, 0x3, 0x2, 0x2, 0x2, 0x68, 0x69, 0xc, 0xb, 0x2, 0x2, 0x69, 0x6a, 
-    0x9, 0x2, 0x2, 0x2, 0x6a, 0x78, 0x5, 0x16, 0xc, 0xc, 0x6b, 0x6c, 0xc, 
-    0xa, 0x2, 0x2, 0x6c, 0x6d, 0x9, 0x3, 0x2, 0x2, 0x6d, 0x78, 0x5, 0x16, 
-    0xc, 0xb, 0x6e, 0x6f, 0xc, 0x9, 0x2, 0x2, 0x6f, 0x70, 0x7, 0x15, 0x2, 
-    0x2, 0x70, 0x78, 0x5, 0x16, 0xc, 0xa, 0x71, 0x72, 0xc, 0x8, 0x2, 0x2, 
-    0x72, 0x73, 0x7, 0x16, 0x2, 0x2, 0x73, 0x78, 0x5, 0x16, 0xc, 0x9, 0x74, 
-    0x75, 0xc, 0x7, 0x2, 0x2, 0x75, 0x76, 0x7, 0x17, 0x2, 0x2, 0x76, 0x78, 
-    0x5, 0x16, 0xc, 0x8, 0x77, 0x68, 0x3, 0x2, 0x2, 0x2, 0x77, 0x6b, 0x3, 
-    0x2, 0x2, 0x2, 0x77, 0x6e, 0x3, 0x2, 0x2, 0x2, 0x77, 0x71, 0x3, 0x2, 
-    0x2, 0x2, 0x77, 0x74, 0x3, 0x2, 0x2, 0x2, 0x78, 0x7b, 0x3, 0x2, 0x2, 
-    0x2, 0x79, 0x77, 0x3, 0x2, 0x2, 0x2, 0x79, 0x7a, 0x3, 0x2, 0x2, 0x2, 
-    0x7a, 0x17, 0x3, 0x2, 0x2, 0x2, 0x7b, 0x79, 0x3, 0x2, 0x2, 0x2, 0xd, 
-    0x1a, 0x1c, 0x1f, 0x28, 0x34, 0x37, 0x55, 0x58, 0x66, 0x77, 0x79, 
+    0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x3, 0xc, 0x7, 0xc, 0x7e, 0xa, 0xc, 0xc, 
+    0xc, 0xe, 0xc, 0x81, 0xb, 0xc, 0x3, 0xc, 0x2, 0x3, 0x16, 0xd, 0x2, 0x4, 
+    0x6, 0x8, 0xa, 0xc, 0xe, 0x10, 0x12, 0x14, 0x16, 0x2, 0x4, 0x3, 0x2, 
+    0x8, 0x9, 0x3, 0x2, 0xa, 0xb, 0x2, 0x8d, 0x2, 0x1a, 0x3, 0x2, 0x2, 0x2, 
+    0x4, 0x25, 0x3, 0x2, 0x2, 0x2, 0x6, 0x28, 0x3, 0x2, 0x2, 0x2, 0x8, 0x3a, 
+    0x3, 0x2, 0x2, 0x2, 0xa, 0x3f, 0x3, 0x2, 0x2, 0x2, 0xc, 0x44, 0x3, 0x2, 
+    0x2, 0x2, 0xe, 0x48, 0x3, 0x2, 0x2, 0x2, 0x10, 0x4d, 0x3, 0x2, 0x2, 
+    0x2, 0x12, 0x51, 0x3, 0x2, 0x2, 0x2, 0x14, 0x54, 0x3, 0x2, 0x2, 0x2, 
+    0x16, 0x6c, 0x3, 0x2, 0x2, 0x2, 0x18, 0x1b, 0x5, 0x4, 0x3, 0x2, 0x19, 
+    0x1b, 0x7, 0xe, 0x2, 0x2, 0x1a, 0x18, 0x3, 0x2, 0x2, 0x2, 0x1a, 0x19, 
+    0x3, 0x2, 0x2, 0x2, 0x1b, 0x1c, 0x3, 0x2, 0x2, 0x2, 0x1c, 0x1a, 0x3, 
+    0x2, 0x2, 0x2, 0x1c, 0x1d, 0x3, 0x2, 0x2, 0x2, 0x1d, 0x3, 0x3, 0x2, 
+    0x2, 0x2, 0x1e, 0x26, 0x5, 0x6, 0x4, 0x2, 0x1f, 0x26, 0x5, 0x8, 0x5, 
+    0x2, 0x20, 0x26, 0x5, 0xa, 0x6, 0x2, 0x21, 0x26, 0x5, 0xc, 0x7, 0x2, 
+    0x22, 0x26, 0x5, 0xe, 0x8, 0x2, 0x23, 0x26, 0x5, 0x12, 0xa, 0x2, 0x24, 
+    0x26, 0x5, 0x10, 0x9, 0x2, 0x25, 0x1e, 0x3, 0x2, 0x2, 0x2, 0x25, 0x1f, 
+    0x3, 0x2, 0x2, 0x2, 0x25, 0x20, 0x3, 0x2, 0x2, 0x2, 0x25, 0x21, 0x3, 
+    0x2, 0x2, 0x2, 0x25, 0x22, 0x3, 0x2, 0x2, 0x2, 0x25, 0x23, 0x3, 0x2, 
+    0x2, 0x2, 0x25, 0x24, 0x3, 0x2, 0x2, 0x2, 0x26, 0x5, 0x3, 0x2, 0x2, 
+    0x2, 0x27, 0x29, 0x7, 0xe, 0x2, 0x2, 0x28, 0x27, 0x3, 0x2, 0x2, 0x2, 
+    0x28, 0x29, 0x3, 0x2, 0x2, 0x2, 0x29, 0x2a, 0x3, 0x2, 0x2, 0x2, 0x2a, 
+    0x2b, 0x7, 0x10, 0x2, 0x2, 0x2b, 0x2c, 0x7, 0x19, 0x2, 0x2, 0x2c, 0x35, 
+    0x7, 0x3, 0x2, 0x2, 0x2d, 0x32, 0x7, 0x19, 0x2, 0x2, 0x2e, 0x2f, 0x7, 
+    0x4, 0x2, 0x2, 0x2f, 0x31, 0x7, 0x19, 0x2, 0x2, 0x30, 0x2e, 0x3, 0x2, 
+    0x2, 0x2, 0x31, 0x34, 0x3, 0x2, 0x2, 0x2, 0x32, 0x30, 0x3, 0x2, 0x2, 
+    0x2, 0x32, 0x33, 0x3, 0x2, 0x2, 0x2, 0x33, 0x36, 0x3, 0x2, 0x2, 0x2, 
+    0x34, 0x32, 0x3, 0x2, 0x2, 0x2, 0x35, 0x2d, 0x3, 0x2, 0x2, 0x2, 0x35, 
+    0x36, 0x3, 0x2, 0x2, 0x2, 0x36, 0x37, 0x3, 0x2, 0x2, 0x2, 0x37, 0x38, 
+    0x7, 0x5, 0x2, 0x2, 0x38, 0x39, 0x7, 0x6, 0x2, 0x2, 0x39, 0x7, 0x3, 
+    0x2, 0x2, 0x2, 0x3a, 0x3b, 0x7, 0xe, 0x2, 0x2, 0x3b, 0x3c, 0x7, 0x11, 
+    0x2, 0x2, 0x3c, 0x3d, 0x5, 0x16, 0xc, 0x2, 0x3d, 0x3e, 0x7, 0x6, 0x2, 
+    0x2, 0x3e, 0x9, 0x3, 0x2, 0x2, 0x2, 0x3f, 0x40, 0x7, 0xe, 0x2, 0x2, 
+    0x40, 0x41, 0x7, 0x12, 0x2, 0x2, 0x41, 0x42, 0x5, 0x16, 0xc, 0x2, 0x42, 
+    0x43, 0x7, 0x6, 0x2, 0x2, 0x43, 0xb, 0x3, 0x2, 0x2, 0x2, 0x44, 0x45, 
+    0x7, 0xe, 0x2, 0x2, 0x45, 0x46, 0x7, 0x13, 0x2, 0x2, 0x46, 0x47, 0x7, 
+    0x6, 0x2, 0x2, 0x47, 0xd, 0x3, 0x2, 0x2, 0x2, 0x48, 0x49, 0x7, 0xe, 
+    0x2, 0x2, 0x49, 0x4a, 0x7, 0x19, 0x2, 0x2, 0x4a, 0x4b, 0x7, 0x7, 0x2, 
+    0x2, 0x4b, 0x4c, 0x5, 0x16, 0xc, 0x2, 0x4c, 0xf, 0x3, 0x2, 0x2, 0x2, 
+    0x4d, 0x4e, 0x7, 0xe, 0x2, 0x2, 0x4e, 0x4f, 0x7, 0x14, 0x2, 0x2, 0x4f, 
+    0x50, 0x5, 0x16, 0xc, 0x2, 0x50, 0x11, 0x3, 0x2, 0x2, 0x2, 0x51, 0x52, 
+    0x7, 0xe, 0x2, 0x2, 0x52, 0x53, 0x5, 0x16, 0xc, 0x2, 0x53, 0x13, 0x3, 
+    0x2, 0x2, 0x2, 0x54, 0x55, 0x7, 0x19, 0x2, 0x2, 0x55, 0x5e, 0x7, 0x3, 
+    0x2, 0x2, 0x56, 0x5b, 0x5, 0x16, 0xc, 0x2, 0x57, 0x58, 0x7, 0x4, 0x2, 
+    0x2, 0x58, 0x5a, 0x5, 0x16, 0xc, 0x2, 0x59, 0x57, 0x3, 0x2, 0x2, 0x2, 
+    0x5a, 0x5d, 0x3, 0x2, 0x2, 0x2, 0x5b, 0x59, 0x3, 0x2, 0x2, 0x2, 0x5b, 
+    0x5c, 0x3, 0x2, 0x2, 0x2, 0x5c, 0x5f, 0x3, 0x2, 0x2, 0x2, 0x5d, 0x5b, 
+    0x3, 0x2, 0x2, 0x2, 0x5e, 0x56, 0x3, 0x2, 0x2, 0x2, 0x5e, 0x5f, 0x3, 
+    0x2, 0x2, 0x2, 0x5f, 0x60, 0x3, 0x2, 0x2, 0x2, 0x60, 0x61, 0x7, 0x5, 
+    0x2, 0x2, 0x61, 0x15, 0x3, 0x2, 0x2, 0x2, 0x62, 0x63, 0x8, 0xc, 0x1, 
+    0x2, 0x63, 0x64, 0x7, 0x18, 0x2, 0x2, 0x64, 0x6d, 0x5, 0x16, 0xc, 0xc, 
+    0x65, 0x66, 0x7, 0x3, 0x2, 0x2, 0x66, 0x67, 0x5, 0x16, 0xc, 0x2, 0x67, 
+    0x68, 0x7, 0x5, 0x2, 0x2, 0x68, 0x6d, 0x3, 0x2, 0x2, 0x2, 0x69, 0x6d, 
+    0x5, 0x14, 0xb, 0x2, 0x6a, 0x6d, 0x7, 0xc, 0x2, 0x2, 0x6b, 0x6d, 0x7, 
+    0x19, 0x2, 0x2, 0x6c, 0x62, 0x3, 0x2, 0x2, 0x2, 0x6c, 0x65, 0x3, 0x2, 
+    0x2, 0x2, 0x6c, 0x69, 0x3, 0x2, 0x2, 0x2, 0x6c, 0x6a, 0x3, 0x2, 0x2, 
+    0x2, 0x6c, 0x6b, 0x3, 0x2, 0x2, 0x2, 0x6d, 0x7f, 0x3, 0x2, 0x2, 0x2, 
+    0x6e, 0x6f, 0xc, 0xb, 0x2, 0x2, 0x6f, 0x70, 0x9, 0x2, 0x2, 0x2, 0x70, 
+    0x7e, 0x5, 0x16, 0xc, 0xc, 0x71, 0x72, 0xc, 0xa, 0x2, 0x2, 0x72, 0x73, 
+    0x9, 0x3, 0x2, 0x2, 0x73, 0x7e, 0x5, 0x16, 0xc, 0xb, 0x74, 0x75, 0xc, 
+    0x9, 0x2, 0x2, 0x75, 0x76, 0x7, 0x15, 0x2, 0x2, 0x76, 0x7e, 0x5, 0x16, 
+    0xc, 0xa, 0x77, 0x78, 0xc, 0x8, 0x2, 0x2, 0x78, 0x79, 0x7, 0x16, 0x2, 
+    0x2, 0x79, 0x7e, 0x5, 0x16, 0xc, 0x9, 0x7a, 0x7b, 0xc, 0x7, 0x2, 0x2, 
+    0x7b, 0x7c, 0x7, 0x17, 0x2, 0x2, 0x7c, 0x7e, 0x5, 0x16, 0xc, 0x8, 0x7d, 
+    0x6e, 0x3, 0x2, 0x2, 0x2, 0x7d, 0x71, 0x3, 0x2, 0x2, 0x2, 0x7d, 0x74, 
+    0x3, 0x2, 0x2, 0x2, 0x7d, 0x77, 0x3, 0x2, 0x2, 0x2, 0x7d, 0x7a, 0x3, 
+    0x2, 0x2, 0x2, 0x7e, 0x81, 0x3, 0x2, 0x2, 0x2, 0x7f, 0x7d, 0x3, 0x2, 
+    0x2, 0x2, 0x7f, 0x80, 0x3, 0x2, 0x2, 0x2, 0x80, 0x17, 0x3, 0x2, 0x2, 
+    0x2, 0x81, 0x7f, 0x3, 0x2, 0x2, 0x2, 0xd, 0x1a, 0x1c, 0x25, 0x28, 0x32, 
+    0x35, 0x5b, 0x5e, 0x6c, 0x7d, 0x7f, 
   };
 
   atn::ATNDeserializer deserializer;

@@ -12,8 +12,16 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
 #include <any>
+#include <cstdlib>
 #include <iostream>
+#include <llvm-16/llvm/IR/Value.h>
 using namespace llvm;
+
+struct StackEntry {
+  int n;
+  enum Type {NO, FUNC, IF} t;
+  llvm::BasicBlock *to;
+};
 
 struct TreeLLVMWalker : public UzhLangVisitor {
   std::vector<std::map<std::string, Value *>> vars;
@@ -22,6 +30,35 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   Module *module;
   IRBuilder<> *builder;
   Type *int32Type;
+
+  std::vector<StackEntry> space_stack;
+
+  void undo_stack(int n, bool is_else = false) {
+    if (n > space_stack.back().n) {
+      std::cerr << "indentation made deeper in inproper place!\n";
+      exit(1);
+    }
+    if ((space_stack.back().n - n) % 4) {
+      std::cerr << "depth is not divisivle by 4!\n";
+      exit(1);
+    }
+    while (space_stack.size() and n != space_stack.back().n) {
+      llvm::BasicBlock *to = space_stack.back().to;
+      space_stack.pop_back();
+      if (!to) // TODO it means we exited function? what to do?
+        break;
+      if (is_else and n == space_stack.back().n) {
+        BasicBlock *if_else_exit = BasicBlock::Create(*ctxLLVM, "", currFunc);
+        builder->CreateBr(if_else_exit);
+        builder->SetInsertPoint(to);
+        space_stack.push_back({n+4, StackEntry::NO, if_else_exit});
+        break;
+      }
+      builder->CreateBr(to);
+      builder->SetInsertPoint(to);
+    }
+  }
+
   TreeLLVMWalker(LLVMContext *ctxLLVM, IRBuilder<> *builder, Module *module)
       : ctxLLVM(ctxLLVM), builder(builder), module(module) {
     int32Type = Type::getInt32Ty(*ctxLLVM);
@@ -43,138 +80,117 @@ struct TreeLLVMWalker : public UzhLangVisitor {
         std::map<std::string, Value *>{{"Y_SIZE", builder->getInt32(256)},
                                        {"X_SIZE", builder->getInt32(512)}});
     // program: nodeDecl+;
-    for (auto it : ctx->nodeDecl()) {
-      visitNodeDecl(it);
+    for (auto it : ctx->line()) {
+      visitLine(it);
     }
     return nullptr;
   }
 
-  antlrcpp::Any visitNodeDecl(UzhLangParser::NodeDeclContext *ctx) override {
-    outs() << "visitNodeDecl\n";
-    // nodeDecl: '(' 'NODE' (varDecl | funcDecl) ')';
-    if (ctx->varDecl()) {
-      return visitVarDecl(ctx->varDecl());
-    }
-    if (ctx->funcDecl()) {
-      return visitFuncDecl(ctx->funcDecl());
-    }
+  antlrcpp::Any visitLine(UzhLangParser::LineContext *ctx) override {
+    outs() << "Line\n";
+    if (ctx->functionLine())
+      visitFunctionLine(ctx->functionLine());
+    if (ctx->whileLine())
+      visitWhileLine(ctx->whileLine());
+    if (ctx->ifLine())
+      visitIfLine(ctx->ifLine());
+    if (ctx->elseLine())
+      visitElseLine(ctx->elseLine());
+    if (ctx->assignLine())
+      visitAssignLine(ctx->assignLine());
+    if (ctx->exprLine())
+      visitExprLine(ctx->exprLine());
+    if (ctx->returnLine())
+      visitReturnLine(ctx->returnLine());
     return nullptr;
   }
 
-  antlrcpp::Any visitFuncDecl(UzhLangParser::FuncDeclContext *ctx) override {
-    // funcDecl: ID '(' ID* ')' node+;
+  antlrcpp::Any visitExprLine(UzhLangParser::ExprLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size());
+    return visitExpr(ctx->expr());
+  }
+
+  antlrcpp::Any visitFunctionLine(UzhLangParser::FunctionLineContext *ctx) override {
+    if (ctx->BOL() and ctx->BOL()->children.size() != 1) {
+      std::cerr << "function decl can not be nested!\n";
+      exit(1);
+    }
+    space_stack.push_back({4, StackEntry::FUNC, nullptr});
+
     std::string name = ctx->ID()[0]->getText();
     outs() << "visitFuncDecl: " << name << "\n";
     vars.push_back({});
 
-    // (i32 %0, i32 %1, i32 %2)
     std::vector<Type *> funcParamTypes;
-    for (int arg = 1; arg < ctx->ID().size(); arg++) {
+    for (int arg = 5; arg < ctx->ID().size(); arg++)
       funcParamTypes.push_back(int32Type);
-    }
-    // define i32 @color(i32 %0, i32 %1, i32 %2)
     FunctionType *funcType =
         FunctionType::get(int32Type, funcParamTypes, false);
     Function *func = Function::Create(funcType, Function::ExternalLinkage,
                                       ctx->ID()[0]->getText(), module);
-    // entry:
     BasicBlock *entryBB = BasicBlock::Create(*ctxLLVM, "entry", func);
     builder->SetInsertPoint(entryBB);
     currFunc = func;
 
-    // (x y step) -> (i32 %0, i32 %1, i32 %2)
-    for (int arg = 1; arg < ctx->ID().size(); arg++) {
+    for (int arg = 1; arg < ctx->ID().size(); arg++)
       registerVar(ctx->ID()[arg]->getText(), func->getArg(arg - 1));
-    }
 
-    // Add instructions
-    Value *res = nullptr;
-    for (auto it : ctx->node()) {
-      res = visitNode(it).as<Value *>();
-    }
-    vars.pop_back();
-    builder->CreateRet(res);
     return nullptr;
   }
 
-  antlrcpp::Any visitNode(UzhLangParser::NodeContext *ctx) override {
-    outs() << "visitNode\n";
-    // node: nodeDecl | ... ;
-    if (ctx->nodeDecl()) {
-      return visitNodeDecl(ctx->nodeDecl());
-    }
-    if (ctx->expr()) {
-      // node: ... | expr ;
-      return visitExpr(ctx->expr());
-    }
-    // node: ... | '{' ID node* '}';
-    if (ctx->ID()) {
-      std::string name = ctx->ID()->getText();
-      if (name == "LOOP") {
-        // node: ... | '{' LOOP it begin end node* '}';
-        return visitLoop(ctx);
-      }
-      // node: ... | '{' FuncID node* '}'
-      return visitFuncCall(name, ctx);
-    }
-    return nullptr;
-  }
+  antlrcpp::Any visitWhileLine(UzhLangParser::WhileLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size());
 
-  antlrcpp::Any visitLoop(UzhLangParser::NodeContext *ctx) {
-    outs() << "visitLoop\n";
-    // node: ... | '{' LOOP it begin end node* '}';
-    vars.push_back({});
-    if (ctx->node().size() < 3) {
-      outs() << "[Error] Too few arguments for LOOP\n";
-      return nullptr;
-    }
-    Value *beg = visitNode(ctx->node()[1]).as<Value *>();
-    Value *end = visitNode(ctx->node()[2]).as<Value *>();
-
-    // br label cmpBB
-    BasicBlock *prevBB = builder->GetInsertBlock();
-    // it = phi i32 [ 0, prevBB ], [ inc, iterationBB ]
-    // cond = icmp eq i32 %1, end
-    // br i1 cond, exitBB, iterationBB
     BasicBlock *cmpBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
-    // inc = add i32 it, 1
-    // br label cmpBB
     BasicBlock *iterationBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
-    // function continuation
     BasicBlock *exitBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
+
+    space_stack.push_back({space_stack.back().n+4, StackEntry::NO, cmpBB});
 
     // br label cmpBB
     builder->CreateBr(cmpBB);
     builder->SetInsertPoint(cmpBB);
-    // it = phi i32 [ 0, prevBB ], [ inc, iterationBB ]
-    PHINode *it = builder->CreatePHI(builder->getInt32Ty(), 2);
-    it->addIncoming(beg, prevBB);
-    registerVar(ctx->node()[0]->getText(), it);
-    // cond = icmp eq i32 %1, end
-    auto cond = builder->CreateICmpEQ(it, end);
-    // br i1 cond, exitBB, iterationBB
-    builder->CreateCondBr(cond, exitBB, iterationBB);
+    Value *cond = visitExpr(ctx->expr());
+    builder->CreateCondBr(
+        builder->CreateTrunc(cond, builder->getInt1Ty()),
+        iterationBB, exitBB
+    );
     builder->SetInsertPoint(iterationBB);
 
-    // Iteration code generation
-    for (int i = 3; i < ctx->node().size(); i++) {
-      visitNode(ctx->node()[i]);
-    }
-
-    // inc = add i32 it, 1
-    Value *inc = builder->CreateAdd(it, builder->getInt32(1));
-    // br label cmpBB
-    builder->CreateBr(cmpBB);
-    // it = phi i32 [ 0, prevBB ], [ inc, iterationBB ]
-    it->addIncoming(inc, builder->GetInsertBlock());
-    builder->SetInsertPoint(exitBB);
-
-    vars.pop_back();
-    return (Value *)it;
+    return nullptr;
   }
 
-  antlrcpp::Any visitFuncCall(std::string &name,
-                              UzhLangParser::NodeContext *ctx) {
+  antlrcpp::Any visitIfLine(UzhLangParser::IfLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size());
+
+    BasicBlock *trueBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
+    BasicBlock *falseBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
+
+    space_stack.push_back({space_stack.back().n+4, StackEntry::IF, falseBB});
+
+    // br label cmpBB
+    Value *cond = visitExpr(ctx->expr());
+    builder->CreateCondBr(
+        builder->CreateTrunc(cond, builder->getInt1Ty()),
+        trueBB, falseBB
+    );
+    builder->SetInsertPoint(trueBB);
+
+    return nullptr;
+  }
+
+  antlrcpp::Any visitElseLine(UzhLangParser::ElseLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size(), true);
+    return nullptr;
+  }
+
+  antlrcpp::Any visitAssignLine(UzhLangParser::AssignLineContext *ctx) override {
+    std::string name = ctx->ID()->getText();
+    outs() << "visitVarDecl: " << name << "\n";
+    return registerVar(name, visitExpr(ctx->expr()).as<Value *>());
+  }
+
+  antlrcpp::Any visitFuncCall(UzhLangParser::FuncCallContext *ctx) override {
     // node: ... | '{' FuncID node* '}'
     outs() << "visitFuncCall: " << name << "\n";
     // i32 @color(i32 %0, i32 %1, i32 %2)
@@ -197,12 +213,6 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     return (Value *)builder->CreateCall(func, args);
   }
 
-  antlrcpp::Any visitVarDecl(UzhLangParser::VarDeclContext *ctx) override {
-    // varDecl: ID expr;
-    std::string name = ctx->ID()->getText();
-    outs() << "visitVarDecl: " << name << "\n";
-    return registerVar(name, visitExpr(ctx->expr()).as<Value *>());
-  }
 
   antlrcpp::Any visitExpr(UzhLangParser::ExprContext *ctx) override {
     outs() << "visitExpr: ";

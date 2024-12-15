@@ -19,9 +19,9 @@ public:
   };
 
   enum {
-    RuleProgram = 0, RuleLine = 1, RuleEmpty_line = 2, RuleFunction_line = 3, 
-    RuleWhile_line = 4, RuleIf_line = 5, RuleElse_line = 6, RuleAssign_line = 7, 
-    RuleReturn_line = 8, RuleFunc_call = 9, RuleExpr = 10
+    RuleProgram = 0, RuleLine = 1, RuleFunctionLine = 2, RuleWhileLine = 3, 
+    RuleIfLine = 4, RuleElseLine = 5, RuleAssignLine = 6, RuleReturnLine = 7, 
+    RuleExprLine = 8, RuleFuncCall = 9, RuleExpr = 10
   };
 
   UzhLangParser(antlr4::TokenStream *input);
@@ -36,14 +36,14 @@ public:
 
   class ProgramContext;
   class LineContext;
-  class Empty_lineContext;
-  class Function_lineContext;
-  class While_lineContext;
-  class If_lineContext;
-  class Else_lineContext;
-  class Assign_lineContext;
-  class Return_lineContext;
-  class Func_callContext;
+  class FunctionLineContext;
+  class WhileLineContext;
+  class IfLineContext;
+  class ElseLineContext;
+  class AssignLineContext;
+  class ReturnLineContext;
+  class ExprLineContext;
+  class FuncCallContext;
   class ExprContext; 
 
   class  ProgramContext : public antlr4::ParserRuleContext {
@@ -52,8 +52,8 @@ public:
     virtual size_t getRuleIndex() const override;
     std::vector<LineContext *> line();
     LineContext* line(size_t i);
-    std::vector<Empty_lineContext *> empty_line();
-    Empty_lineContext* empty_line(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> BOL();
+    antlr4::tree::TerminalNode* BOL(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -68,14 +68,13 @@ public:
   public:
     LineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Function_lineContext *function_line();
-    While_lineContext *while_line();
-    If_lineContext *if_line();
-    Else_lineContext *else_line();
-    Assign_lineContext *assign_line();
-    ExprContext *expr();
-    Return_lineContext *return_line();
-    antlr4::tree::TerminalNode *BOL();
+    FunctionLineContext *functionLine();
+    WhileLineContext *whileLine();
+    IfLineContext *ifLine();
+    ElseLineContext *elseLine();
+    AssignLineContext *assignLine();
+    ExprLineContext *exprLine();
+    ReturnLineContext *returnLine();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -86,10 +85,13 @@ public:
 
   LineContext* line();
 
-  class  Empty_lineContext : public antlr4::ParserRuleContext {
+  class  FunctionLineContext : public antlr4::ParserRuleContext {
   public:
-    Empty_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    FunctionLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *DEF();
+    std::vector<antlr4::tree::TerminalNode *> ID();
+    antlr4::tree::TerminalNode* ID(size_t i);
     antlr4::tree::TerminalNode *BOL();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -99,29 +101,13 @@ public:
    
   };
 
-  Empty_lineContext* empty_line();
+  FunctionLineContext* functionLine();
 
-  class  Function_lineContext : public antlr4::ParserRuleContext {
+  class  WhileLineContext : public antlr4::ParserRuleContext {
   public:
-    Function_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    WhileLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *DEF();
-    std::vector<antlr4::tree::TerminalNode *> ID();
-    antlr4::tree::TerminalNode* ID(size_t i);
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  Function_lineContext* function_line();
-
-  class  While_lineContext : public antlr4::ParserRuleContext {
-  public:
-    While_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
     antlr4::tree::TerminalNode *WHILE();
     ExprContext *expr();
 
@@ -132,12 +118,13 @@ public:
    
   };
 
-  While_lineContext* while_line();
+  WhileLineContext* whileLine();
 
-  class  If_lineContext : public antlr4::ParserRuleContext {
+  class  IfLineContext : public antlr4::ParserRuleContext {
   public:
-    If_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    IfLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
     antlr4::tree::TerminalNode *IF();
     ExprContext *expr();
 
@@ -148,12 +135,13 @@ public:
    
   };
 
-  If_lineContext* if_line();
+  IfLineContext* ifLine();
 
-  class  Else_lineContext : public antlr4::ParserRuleContext {
+  class  ElseLineContext : public antlr4::ParserRuleContext {
   public:
-    Else_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ElseLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
     antlr4::tree::TerminalNode *ELSE();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -163,12 +151,13 @@ public:
    
   };
 
-  Else_lineContext* else_line();
+  ElseLineContext* elseLine();
 
-  class  Assign_lineContext : public antlr4::ParserRuleContext {
+  class  AssignLineContext : public antlr4::ParserRuleContext {
   public:
-    Assign_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    AssignLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
     antlr4::tree::TerminalNode *ID();
     ExprContext *expr();
 
@@ -179,12 +168,13 @@ public:
    
   };
 
-  Assign_lineContext* assign_line();
+  AssignLineContext* assignLine();
 
-  class  Return_lineContext : public antlr4::ParserRuleContext {
+  class  ReturnLineContext : public antlr4::ParserRuleContext {
   public:
-    Return_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ReturnLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
     antlr4::tree::TerminalNode *RETURN();
     ExprContext *expr();
 
@@ -195,11 +185,27 @@ public:
    
   };
 
-  Return_lineContext* return_line();
+  ReturnLineContext* returnLine();
 
-  class  Func_callContext : public antlr4::ParserRuleContext {
+  class  ExprLineContext : public antlr4::ParserRuleContext {
   public:
-    Func_callContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ExprLineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *BOL();
+    ExprContext *expr();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ExprLineContext* exprLine();
+
+  class  FuncCallContext : public antlr4::ParserRuleContext {
+  public:
+    FuncCallContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
     std::vector<ExprContext *> expr();
@@ -212,7 +218,7 @@ public:
    
   };
 
-  Func_callContext* func_call();
+  FuncCallContext* funcCall();
 
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
@@ -221,7 +227,7 @@ public:
     antlr4::tree::TerminalNode *NOT();
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
-    Func_callContext *func_call();
+    FuncCallContext *funcCall();
     antlr4::tree::TerminalNode *INT();
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *COMP();

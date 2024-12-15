@@ -20,29 +20,29 @@ public:
   virtual void enterLine(UzhLangParser::LineContext *ctx) = 0;
   virtual void exitLine(UzhLangParser::LineContext *ctx) = 0;
 
-  virtual void enterEmpty_line(UzhLangParser::Empty_lineContext *ctx) = 0;
-  virtual void exitEmpty_line(UzhLangParser::Empty_lineContext *ctx) = 0;
+  virtual void enterFunctionLine(UzhLangParser::FunctionLineContext *ctx) = 0;
+  virtual void exitFunctionLine(UzhLangParser::FunctionLineContext *ctx) = 0;
 
-  virtual void enterFunction_line(UzhLangParser::Function_lineContext *ctx) = 0;
-  virtual void exitFunction_line(UzhLangParser::Function_lineContext *ctx) = 0;
+  virtual void enterWhileLine(UzhLangParser::WhileLineContext *ctx) = 0;
+  virtual void exitWhileLine(UzhLangParser::WhileLineContext *ctx) = 0;
 
-  virtual void enterWhile_line(UzhLangParser::While_lineContext *ctx) = 0;
-  virtual void exitWhile_line(UzhLangParser::While_lineContext *ctx) = 0;
+  virtual void enterIfLine(UzhLangParser::IfLineContext *ctx) = 0;
+  virtual void exitIfLine(UzhLangParser::IfLineContext *ctx) = 0;
 
-  virtual void enterIf_line(UzhLangParser::If_lineContext *ctx) = 0;
-  virtual void exitIf_line(UzhLangParser::If_lineContext *ctx) = 0;
+  virtual void enterElseLine(UzhLangParser::ElseLineContext *ctx) = 0;
+  virtual void exitElseLine(UzhLangParser::ElseLineContext *ctx) = 0;
 
-  virtual void enterElse_line(UzhLangParser::Else_lineContext *ctx) = 0;
-  virtual void exitElse_line(UzhLangParser::Else_lineContext *ctx) = 0;
+  virtual void enterAssignLine(UzhLangParser::AssignLineContext *ctx) = 0;
+  virtual void exitAssignLine(UzhLangParser::AssignLineContext *ctx) = 0;
 
-  virtual void enterAssign_line(UzhLangParser::Assign_lineContext *ctx) = 0;
-  virtual void exitAssign_line(UzhLangParser::Assign_lineContext *ctx) = 0;
+  virtual void enterReturnLine(UzhLangParser::ReturnLineContext *ctx) = 0;
+  virtual void exitReturnLine(UzhLangParser::ReturnLineContext *ctx) = 0;
 
-  virtual void enterReturn_line(UzhLangParser::Return_lineContext *ctx) = 0;
-  virtual void exitReturn_line(UzhLangParser::Return_lineContext *ctx) = 0;
+  virtual void enterExprLine(UzhLangParser::ExprLineContext *ctx) = 0;
+  virtual void exitExprLine(UzhLangParser::ExprLineContext *ctx) = 0;
 
-  virtual void enterFunc_call(UzhLangParser::Func_callContext *ctx) = 0;
-  virtual void exitFunc_call(UzhLangParser::Func_callContext *ctx) = 0;
+  virtual void enterFuncCall(UzhLangParser::FuncCallContext *ctx) = 0;
+  virtual void exitFuncCall(UzhLangParser::FuncCallContext *ctx) = 0;
 
   virtual void enterExpr(UzhLangParser::ExprContext *ctx) = 0;
   virtual void exitExpr(UzhLangParser::ExprContext *ctx) = 0;

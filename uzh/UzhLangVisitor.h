@@ -23,21 +23,21 @@ public:
 
     virtual antlrcpp::Any visitLine(UzhLangParser::LineContext *context) = 0;
 
-    virtual antlrcpp::Any visitEmpty_line(UzhLangParser::Empty_lineContext *context) = 0;
+    virtual antlrcpp::Any visitFunctionLine(UzhLangParser::FunctionLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitFunction_line(UzhLangParser::Function_lineContext *context) = 0;
+    virtual antlrcpp::Any visitWhileLine(UzhLangParser::WhileLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitWhile_line(UzhLangParser::While_lineContext *context) = 0;
+    virtual antlrcpp::Any visitIfLine(UzhLangParser::IfLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitIf_line(UzhLangParser::If_lineContext *context) = 0;
+    virtual antlrcpp::Any visitElseLine(UzhLangParser::ElseLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitElse_line(UzhLangParser::Else_lineContext *context) = 0;
+    virtual antlrcpp::Any visitAssignLine(UzhLangParser::AssignLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitAssign_line(UzhLangParser::Assign_lineContext *context) = 0;
+    virtual antlrcpp::Any visitReturnLine(UzhLangParser::ReturnLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturn_line(UzhLangParser::Return_lineContext *context) = 0;
+    virtual antlrcpp::Any visitExprLine(UzhLangParser::ExprLineContext *context) = 0;
 
-    virtual antlrcpp::Any visitFunc_call(UzhLangParser::Func_callContext *context) = 0;
+    virtual antlrcpp::Any visitFuncCall(UzhLangParser::FuncCallContext *context) = 0;
 
     virtual antlrcpp::Any visitExpr(UzhLangParser::ExprContext *context) = 0;
 

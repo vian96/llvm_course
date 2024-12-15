@@ -23,35 +23,35 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitEmpty_line(UzhLangParser::Empty_lineContext *ctx) override {
+  virtual antlrcpp::Any visitFunctionLine(UzhLangParser::FunctionLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitFunction_line(UzhLangParser::Function_lineContext *ctx) override {
+  virtual antlrcpp::Any visitWhileLine(UzhLangParser::WhileLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitWhile_line(UzhLangParser::While_lineContext *ctx) override {
+  virtual antlrcpp::Any visitIfLine(UzhLangParser::IfLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitIf_line(UzhLangParser::If_lineContext *ctx) override {
+  virtual antlrcpp::Any visitElseLine(UzhLangParser::ElseLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitElse_line(UzhLangParser::Else_lineContext *ctx) override {
+  virtual antlrcpp::Any visitAssignLine(UzhLangParser::AssignLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitAssign_line(UzhLangParser::Assign_lineContext *ctx) override {
+  virtual antlrcpp::Any visitReturnLine(UzhLangParser::ReturnLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitReturn_line(UzhLangParser::Return_lineContext *ctx) override {
+  virtual antlrcpp::Any visitExprLine(UzhLangParser::ExprLineContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitFunc_call(UzhLangParser::Func_callContext *ctx) override {
+  virtual antlrcpp::Any visitFuncCall(UzhLangParser::FuncCallContext *ctx) override {
     return visitChildren(ctx);
   }
 
