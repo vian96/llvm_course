@@ -21,7 +21,7 @@ public:
   enum {
     RuleProgram = 0, RuleLine = 1, RuleEmpty_line = 2, RuleFunction_line = 3, 
     RuleWhile_line = 4, RuleIf_line = 5, RuleElse_line = 6, RuleAssign_line = 7, 
-    RuleReturn_line = 8, RuleExpr = 9
+    RuleReturn_line = 8, RuleFunc_call = 9, RuleExpr = 10
   };
 
   UzhLangParser(antlr4::TokenStream *input);
@@ -43,6 +43,7 @@ public:
   class Else_lineContext;
   class Assign_lineContext;
   class Return_lineContext;
+  class Func_callContext;
   class ExprContext; 
 
   class  ProgramContext : public antlr4::ParserRuleContext {
@@ -196,6 +197,23 @@ public:
 
   Return_lineContext* return_line();
 
+  class  Func_callContext : public antlr4::ParserRuleContext {
+  public:
+    Func_callContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Func_callContext* func_call();
+
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
     ExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -203,8 +221,9 @@ public:
     antlr4::tree::TerminalNode *NOT();
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
-    antlr4::tree::TerminalNode *ID();
+    Func_callContext *func_call();
     antlr4::tree::TerminalNode *INT();
+    antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *COMP();
     antlr4::tree::TerminalNode *AND();
     antlr4::tree::TerminalNode *OR();

@@ -41,6 +41,9 @@ public:
   virtual void enterReturn_line(UzhLangParser::Return_lineContext *ctx) = 0;
   virtual void exitReturn_line(UzhLangParser::Return_lineContext *ctx) = 0;
 
+  virtual void enterFunc_call(UzhLangParser::Func_callContext *ctx) = 0;
+  virtual void exitFunc_call(UzhLangParser::Func_callContext *ctx) = 0;
+
   virtual void enterExpr(UzhLangParser::ExprContext *ctx) = 0;
   virtual void exitExpr(UzhLangParser::ExprContext *ctx) = 0;
 

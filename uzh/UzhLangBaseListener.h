@@ -43,6 +43,9 @@ public:
   virtual void enterReturn_line(UzhLangParser::Return_lineContext * /*ctx*/) override { }
   virtual void exitReturn_line(UzhLangParser::Return_lineContext * /*ctx*/) override { }
 
+  virtual void enterFunc_call(UzhLangParser::Func_callContext * /*ctx*/) override { }
+  virtual void exitFunc_call(UzhLangParser::Func_callContext * /*ctx*/) override { }
+
   virtual void enterExpr(UzhLangParser::ExprContext * /*ctx*/) override { }
   virtual void exitExpr(UzhLangParser::ExprContext * /*ctx*/) override { }
 

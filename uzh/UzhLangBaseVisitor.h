@@ -51,6 +51,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitFunc_call(UzhLangParser::Func_callContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitExpr(UzhLangParser::ExprContext *ctx) override {
     return visitChildren(ctx);
   }

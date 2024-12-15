@@ -37,6 +37,8 @@ public:
 
     virtual antlrcpp::Any visitReturn_line(UzhLangParser::Return_lineContext *context) = 0;
 
+    virtual antlrcpp::Any visitFunc_call(UzhLangParser::Func_callContext *context) = 0;
+
     virtual antlrcpp::Any visitExpr(UzhLangParser::ExprContext *context) = 0;
 
 

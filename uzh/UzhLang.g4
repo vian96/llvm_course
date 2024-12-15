@@ -2,9 +2,8 @@ grammar UzhLang;
 
 // Parser rule
 
-program: (line|empty_line)+;
+program: (line|BOL)+;
 line: BOL? (function_line | while_line | if_line | else_line | assign_line | expr | return_line);
-empty_line: BOL;
 
 function_line: DEF ID '(' (ID (',' ID)*  )? ')' ':';
 while_line: WHILE expr ':';
@@ -12,6 +11,7 @@ if_line: IF expr ':';
 else_line: ELSE ':';
 assign_line: ID '=' expr;
 return_line: RETURN expr;
+func_call: ID '('(expr (',' expr)*  )? ')';
 
 expr:
 	NOT expr
@@ -21,7 +21,7 @@ expr:
 	| expr AND expr
 	| expr OR expr
 	| '(' expr ')'
-	| ID '('(expr (',' expr)*  )? ')'
+	| func_call
 	| INT
 	| ID;
 
