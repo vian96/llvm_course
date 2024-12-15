@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <llvm-16/llvm/IR/Value.h>
+#include <string>
 using namespace llvm;
 
 struct StackEntry {
@@ -185,37 +186,41 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitAssignLine(UzhLangParser::AssignLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size());
     std::string name = ctx->ID()->getText();
     outs() << "visitVarDecl: " << name << "\n";
     return registerVar(name, visitExpr(ctx->expr()).as<Value *>());
   }
 
   antlrcpp::Any visitFuncCall(UzhLangParser::FuncCallContext *ctx) override {
-    // node: ... | '{' FuncID node* '}'
+    std::string name = ctx->ID()->getText();
     outs() << "visitFuncCall: " << name << "\n";
-    // i32 @color(i32 %0, i32 %1, i32 %2)
     Function *func = module->getFunction(name);
     if (!func) {
       outs() << "[Error] Unknown Function name: " << name << "\n";
-      return nullptr;
+      exit(1);
     }
-    int argSize = ctx->node().size();
+    int argSize = ctx->expr().size();
     if (argSize != func->arg_size()) {
       outs() << "[Error] Wrong arguments number for " << name << "\n";
-      return nullptr;
+      exit(1);
     }
-    // (i32 %13, i32 %6, i32 %1)
     std::vector<Value *> args;
-    for (int i = 0; i < argSize; i++) {
-      args.push_back(visitNode(ctx->node()[i]));
-    }
-    // %16 = call i32 @color(i32 %13, i32 %6, i32 %1)
+    for (int i = 0; i < argSize; i++)
+      args.push_back(visitExpr(ctx->expr()[i]));
     return (Value *)builder->CreateCall(func, args);
   }
 
+  antlrcpp::Any visitReturnLine(UzhLangParser::ReturnLineContext *ctx) override {
+    undo_stack(ctx->BOL()->getText().size());
+    builder->CreateRet((Value*) visitExpr(ctx->expr()));
+    return nullptr;
+  }
 
   antlrcpp::Any visitExpr(UzhLangParser::ExprContext *ctx) override {
     outs() << "visitExpr: ";
+    if (ctx->funcCall())
+      return visitFuncCall(ctx->funcCall());
     // ID
     if (ctx->ID()) {
       outs() << ctx->ID()->getText() << "\n";
@@ -226,32 +231,50 @@ struct TreeLLVMWalker : public UzhLangVisitor {
       outs() << ctx->INT()->getText() << "\n";
       return (Value *)builder->getInt32(std::stoi(ctx->INT()->getText()));
     }
-    // '-' expr
+    // NOT expr
     if (ctx->children.size() == 2) {
-      outs() << "neg\n";
-      return builder->CreateNeg(visit(ctx->children[1]).as<Value *>());
+      std::cerr << "NOT is not implemented\n";
+      exit(1);
     }
     // '(' expr ')'
     if (ctx->children[0]->getText().at(0) == '(') {
       outs() << "()\n";
       return visit(ctx->children[1]);
     }
-    // ( '*' | '/') expr expr
-    // ( '+' | '-') expr expr
+    // BIN OPERATION
     outs() << ctx->children[0]->getText() << "\n";
     Value *lhs = visit(ctx->children[1]).as<Value *>();
     Value *rhs = visit(ctx->children[2]).as<Value *>();
-    switch (ctx->children[0]->getText().at(0)) {
-    case '*':
-      return builder->CreateMul(lhs, rhs);
-    case '/':
-      return builder->CreateSDiv(lhs, rhs);
-    case '+':
-      return builder->CreateAdd(lhs, rhs);
-    case '-':
-      return builder->CreateSub(lhs, rhs);
-    default:
-      break;
+    if (ctx->AND())
+      return builder->CreateAnd(lhs, rhs);
+    if (ctx->OR())
+      return builder->CreateOr(lhs, rhs);
+    if (ctx->COMP()) {
+      std::string op = ctx->children[0]->getText();
+      if (op == "<")
+        return builder->CreateICmpSLT(lhs, rhs);
+      if (op == ">")
+        return builder->CreateICmpSGT(lhs, rhs);
+      if (op == "<=")
+        return builder->CreateICmpSLE(lhs, rhs);
+      if (op == ">=")
+        return builder->CreateICmpSGE(lhs, rhs);
+      if (op == "==")
+        return builder->CreateICmpEQ(lhs, rhs);
+      if (op == "!=")
+        return builder->CreateICmpNE(lhs, rhs);
+    }
+    switch (ctx->children[1]->getText().at(0)) {
+      case '*':
+        return builder->CreateMul(lhs, rhs);
+      case '/':
+        return builder->CreateSDiv(lhs, rhs);
+      case '+':
+        return builder->CreateAdd(lhs, rhs);
+      case '-':
+        return builder->CreateSub(lhs, rhs);
+      default:
+        break;
     }
     return nullptr;
   }
@@ -304,7 +327,7 @@ int main(int argc, const char *argv[]) {
   // Display the parse tree
    outs() << parser.program()->toStringTree() << "\n";
 
-  TreeDumpWalker walker;
+  TreeLLVMWalker walker;
   walker.visitExpr(parser.expr());
 //  int res = walker.visitExpr(parser.expr()).as<int>();
 //  outs() << "Visitor output: " << res << "\n";
