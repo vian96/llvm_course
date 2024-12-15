@@ -19,6 +19,9 @@ public:
   virtual void enterProgram(UzhLangParser::ProgramContext * /*ctx*/) override { }
   virtual void exitProgram(UzhLangParser::ProgramContext * /*ctx*/) override { }
 
+  virtual void enterCode(UzhLangParser::CodeContext * /*ctx*/) override { }
+  virtual void exitCode(UzhLangParser::CodeContext * /*ctx*/) override { }
+
   virtual void enterLine(UzhLangParser::LineContext * /*ctx*/) override { }
   virtual void exitLine(UzhLangParser::LineContext * /*ctx*/) override { }
 

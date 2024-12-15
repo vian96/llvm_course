@@ -2,7 +2,8 @@ grammar UzhLang;
 
 // Parser rule
 
-program: (line|BOL)+;
+program: code EOF;
+code: (line|BOL)+;
 line: (functionLine | whileLine | ifLine | elseLine | assignLine | exprLine | returnLine);
 
 functionLine: BOL? DEF ID '(' (ID (',' ID)*  )? ')' ':';
@@ -29,7 +30,7 @@ expr:
 // Lexer rules
 INT: [0-9]+;
 LC  : '#' ~[\r\n]* -> channel(HIDDEN);
-BOL : '\n'[ ]*;
+BOL : ('\n'[ ]* EOF? | EOF);
 HWS : [ \t]+ -> channel(HIDDEN);
 DEF: 'def';
 WHILE: 'while';

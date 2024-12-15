@@ -17,6 +17,9 @@ public:
   virtual void enterProgram(UzhLangParser::ProgramContext *ctx) = 0;
   virtual void exitProgram(UzhLangParser::ProgramContext *ctx) = 0;
 
+  virtual void enterCode(UzhLangParser::CodeContext *ctx) = 0;
+  virtual void exitCode(UzhLangParser::CodeContext *ctx) = 0;
+
   virtual void enterLine(UzhLangParser::LineContext *ctx) = 0;
   virtual void exitLine(UzhLangParser::LineContext *ctx) = 0;
 

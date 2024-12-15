@@ -14,6 +14,7 @@
 #include <any>
 #include <cstdlib>
 #include <iostream>
+#include <llvm-16/llvm/IR/Type.h>
 #include <llvm-16/llvm/IR/Value.h>
 #include <string>
 using namespace llvm;
@@ -23,6 +24,10 @@ struct StackEntry {
   enum Type {NO, FUNC, IF} t;
   llvm::BasicBlock *to;
 };
+
+void print(int n) {
+  std::cout << n << '\n';
+}
 
 struct TreeLLVMWalker : public UzhLangVisitor {
   std::vector<std::map<std::string, Value *>> vars;
@@ -66,12 +71,26 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitProgram(UzhLangParser::ProgramContext *ctx) override {
+    visitCode(ctx->code());
+    return nullptr;
+  }
+
+//  antlrcpp::Any visitWhyDoesThisRuleHelp(UzhLangParser::WhyDoesThisRuleHelpContext *ctx) override {
+//    visitCode(ctx->code());
+//    return nullptr;
+//  }
+
+  antlrcpp::Any visitCode(UzhLangParser::CodeContext *ctx) override {
     outs() << "visitProgram\n";
     // declare i32 @PUT_PIXEL(i32, i32, i32)
     ArrayRef<Type *> simPutPixelParamTypes = {int32Type, int32Type, int32Type};
     FunctionType *simPutPixelType =
         FunctionType::get(int32Type, simPutPixelParamTypes, false);
     module->getOrInsertFunction("PUT_PIXEL", simPutPixelType);
+
+    FunctionType *printFuncType =
+        FunctionType::get(Type::getVoidTy(*ctxLLVM), simPutPixelParamTypes, false);
+    module->getOrInsertFunction("print", printFuncType);
 
     // declare i32 @FLUSH()
     FunctionType *simFlushType = FunctionType::get(int32Type, false);
@@ -315,24 +334,71 @@ int main(int argc, const char *argv[]) {
   // Provide the input text in a stream
   antlr4::ANTLRInputStream input(stream);
 
+  std::cout << "past input\n";
   // Create a lexer from the input
   UzhLangLexer lexer(&input);
+
+  std::cout << "past lexer\n";
 
   // Create a token stream from the lexer
   antlr4::CommonTokenStream tokens(&lexer);
 
+  std::cout << "past token\n";
   // Create a parser from the token stream
   UzhLangParser parser(&tokens);
 
+  std::cout << "past parse\n";
+//  std::cout << parser.program()->line().size() << '\n';
   // Display the parse tree
-   outs() << parser.program()->toStringTree() << "\n";
+  outs() << parser.program()->toStringTree() << "\n";
 
-  TreeLLVMWalker walker;
-  walker.visitExpr(parser.expr());
-//  int res = walker.visitExpr(parser.expr()).as<int>();
-//  outs() << "Visitor output: " << res << "\n";
+  LLVMContext context;
+  Module *module = new Module("top", context);
+  IRBuilder<> builder(context);
+
+  TreeLLVMWalker walker(&context, &builder, module);
+  walker.visitProgram(parser.program());
+
+  outs() << "[LLVM IR]\n";
+  module->print(outs(), nullptr);
+  outs() << "\n";
+  bool verif = verifyModule(*module, &outs());
+  outs() << "[VERIFICATION] " << (!verif ? "OK\n\n" : "FAIL\n\n");
+
+  Function *appFunc = module->getFunction("app");
+  if (appFunc == nullptr) {
+    outs() << "Can't find app function\n";
+    return -1;
+  }
+
+  // LLVM IR Interpreter
+  outs() << "[EE] Run\n";
+  InitializeNativeTarget();
+  InitializeNativeTargetAsmPrinter();
+
+  ExecutionEngine *ee =
+      EngineBuilder(std::unique_ptr<Module>(module)).create();
+  ee->InstallLazyFunctionCreator([=](const std::string &fnName) -> void * {
+    if (fnName == "PUT_PIXEL") {
+      return reinterpret_cast<void *>(simPutPixel);
+    }
+    if (fnName == "FLUSH") {
+      return reinterpret_cast<void *>(simFlush);
+    }
+    if (fnName == "print") {
+      return reinterpret_cast<void *>(print);
+    }
+    return nullptr;
+  });
+  ee->finalizeObject();
+
+  simInit();
+
+  ArrayRef<GenericValue> noargs;
+  GenericValue v = ee->runFunction(appFunc, noargs);
+  outs() << "[EE] Result: " << v.IntVal << "\n";
+
+  simExit();
+
   return 0;
-
-
-   return 0;
 }

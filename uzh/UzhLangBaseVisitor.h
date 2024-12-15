@@ -19,6 +19,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitCode(UzhLangParser::CodeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitLine(UzhLangParser::LineContext *ctx) override {
     return visitChildren(ctx);
   }

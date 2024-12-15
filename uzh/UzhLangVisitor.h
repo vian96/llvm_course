@@ -21,6 +21,8 @@ public:
    */
     virtual antlrcpp::Any visitProgram(UzhLangParser::ProgramContext *context) = 0;
 
+    virtual antlrcpp::Any visitCode(UzhLangParser::CodeContext *context) = 0;
+
     virtual antlrcpp::Any visitLine(UzhLangParser::LineContext *context) = 0;
 
     virtual antlrcpp::Any visitFunctionLine(UzhLangParser::FunctionLineContext *context) = 0;
