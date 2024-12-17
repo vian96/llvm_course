@@ -1,8 +1,10 @@
 def fact (n):
+    ans = 0
     if n>1:
-        return n * fact(n-1)
+        ans = n * fact(n-1)
     else:
-        return 1
+        ans = 1
+    return ans
 
 def app():
     n = 7

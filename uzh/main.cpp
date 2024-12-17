@@ -14,6 +14,7 @@
 #include <any>
 #include <cstdlib>
 #include <iostream>
+#include <llvm-16/llvm/IR/Instructions.h>
 #include <llvm-16/llvm/IR/Type.h>
 #include <llvm-16/llvm/IR/Value.h>
 #include <string>
@@ -26,11 +27,11 @@ struct StackEntry {
 };
 
 void print(int n) {
-  std::cout << n << '\n';
+  std::cout << "out: " << n << '\n';
 }
 
 struct TreeLLVMWalker : public UzhLangVisitor {
-  std::vector<std::map<std::string, Value *>> vars;
+  std::vector<std::map<std::string, AllocaInst *>> vars;
   Function *currFunc;
   LLVMContext *ctxLLVM;
   Module *module;
@@ -39,9 +40,25 @@ struct TreeLLVMWalker : public UzhLangVisitor {
 
   std::vector<StackEntry> space_stack;
 
+  Value *get_var_val(const std::string &name) {
+    if (vars.back().count(name))
+      return builder->CreateLoad(Type::getInt32Ty(*ctxLLVM), vars.back()[name]);
+    std::cerr << name << " is unknown varariable!\n";
+    exit(1);
+  }
+
+  void set_var_val(const std::string &name, Value *val) {
+    if (vars.back().count(name)) {
+      builder->CreateStore(val, vars.back()[name]);
+      return;
+    }
+    vars.back()[name] = builder->CreateAlloca(Type::getInt32Ty(*ctxLLVM), 0, name);
+    builder->CreateStore(val, vars.back()[name]);
+  }
+
   void undo_stack(int n, bool is_else = false) {
     if (n > space_stack.back().n) {
-      std::cerr << "indentation made deeper in inproper place!\n";
+      std::cerr << "indentation made deeper in inproper place! exp: " << space_stack.back().n << "got: " << n << '\n';
       exit(1);
     }
     if ((space_stack.back().n - n) % 4) {
@@ -89,16 +106,13 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     module->getOrInsertFunction("PUT_PIXEL", simPutPixelType);
 
     FunctionType *printFuncType =
-        FunctionType::get(Type::getVoidTy(*ctxLLVM), simPutPixelParamTypes, false);
+        FunctionType::get(Type::getVoidTy(*ctxLLVM), {int32Type}, false);
     module->getOrInsertFunction("print", printFuncType);
 
     // declare i32 @FLUSH()
     FunctionType *simFlushType = FunctionType::get(int32Type, false);
     module->getOrInsertFunction("FLUSH", simFlushType);
 
-    vars.push_back(
-        std::map<std::string, Value *>{{"Y_SIZE", builder->getInt32(256)},
-                                       {"X_SIZE", builder->getInt32(512)}});
     // program: nodeDecl+;
     for (auto it : ctx->line()) {
       visitLine(it);
@@ -126,23 +140,25 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitExprLine(UzhLangParser::ExprLineContext *ctx) override {
+    outs() << "exprLine\n";
     undo_stack(ctx->BOL()->getText().size());
-    return visitExpr(ctx->expr());
+    return (Value*)visitExpr(ctx->expr());
   }
 
   antlrcpp::Any visitFunctionLine(UzhLangParser::FunctionLineContext *ctx) override {
-    if (ctx->BOL() and ctx->BOL()->children.size() != 1) {
+    outs() << "funcDec\n";
+    if (ctx->BOL() and ctx->BOL()->getText().size() != 1) {
       std::cerr << "function decl can not be nested!\n";
       exit(1);
     }
-    space_stack.push_back({4, StackEntry::FUNC, nullptr});
+    space_stack.push_back({5, StackEntry::FUNC, nullptr});
 
     std::string name = ctx->ID()[0]->getText();
     outs() << "visitFuncDecl: " << name << "\n";
     vars.push_back({});
 
     std::vector<Type *> funcParamTypes;
-    for (int arg = 5; arg < ctx->ID().size(); arg++)
+    for (int arg = 1; arg < ctx->ID().size(); arg++)
       funcParamTypes.push_back(int32Type);
     FunctionType *funcType =
         FunctionType::get(int32Type, funcParamTypes, false);
@@ -153,12 +169,13 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     currFunc = func;
 
     for (int arg = 1; arg < ctx->ID().size(); arg++)
-      registerVar(ctx->ID()[arg]->getText(), func->getArg(arg - 1));
+      set_var_val(ctx->ID()[arg]->getText(), func->getArg(arg - 1));
 
     return nullptr;
   }
 
   antlrcpp::Any visitWhileLine(UzhLangParser::WhileLineContext *ctx) override {
+    outs() << "whileLine\n";
     undo_stack(ctx->BOL()->getText().size());
 
     BasicBlock *cmpBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
@@ -181,6 +198,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitIfLine(UzhLangParser::IfLineContext *ctx) override {
+    outs() << "fiLine\n";
     undo_stack(ctx->BOL()->getText().size());
 
     BasicBlock *trueBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
@@ -200,15 +218,18 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitElseLine(UzhLangParser::ElseLineContext *ctx) override {
+    outs() << "elseLine\n";
     undo_stack(ctx->BOL()->getText().size(), true);
     return nullptr;
   }
 
   antlrcpp::Any visitAssignLine(UzhLangParser::AssignLineContext *ctx) override {
+    outs() << "assLine\n";
     undo_stack(ctx->BOL()->getText().size());
     std::string name = ctx->ID()->getText();
     outs() << "visitVarDecl: " << name << "\n";
-    return registerVar(name, visitExpr(ctx->expr()).as<Value *>());
+    set_var_val(name, visitExpr(ctx->expr()).as<Value *>());
+    return nullptr;
   }
 
   antlrcpp::Any visitFuncCall(UzhLangParser::FuncCallContext *ctx) override {
@@ -221,7 +242,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     }
     int argSize = ctx->expr().size();
     if (argSize != func->arg_size()) {
-      outs() << "[Error] Wrong arguments number for " << name << "\n";
+      outs() << "[Error] Wrong arguments number for " << name << " need " << func->arg_size() << " got " << argSize << "\n";
       exit(1);
     }
     std::vector<Value *> args;
@@ -231,6 +252,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   }
 
   antlrcpp::Any visitReturnLine(UzhLangParser::ReturnLineContext *ctx) override {
+    outs() << "retLine\n";
     undo_stack(ctx->BOL()->getText().size());
     builder->CreateRet((Value*) visitExpr(ctx->expr()));
     return nullptr;
@@ -239,14 +261,16 @@ struct TreeLLVMWalker : public UzhLangVisitor {
   antlrcpp::Any visitExpr(UzhLangParser::ExprContext *ctx) override {
     outs() << "visitExpr: ";
     if (ctx->funcCall())
-      return visitFuncCall(ctx->funcCall());
+      return (Value *)visitFuncCall(ctx->funcCall());
     // ID
     if (ctx->ID()) {
+      std::cout << "id\n";
       outs() << ctx->ID()->getText() << "\n";
-      return searchVar(ctx->ID()->getText());
+      return (Value *)get_var_val(ctx->ID()->getText());
     }
     // INT
     if (ctx->INT()) {
+      std::cout << "int\n";
       outs() << ctx->INT()->getText() << "\n";
       return (Value *)builder->getInt32(std::stoi(ctx->INT()->getText()));
     }
@@ -258,67 +282,55 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     // '(' expr ')'
     if (ctx->children[0]->getText().at(0) == '(') {
       outs() << "()\n";
-      return visit(ctx->children[1]);
+      return (Value *)visit(ctx->children[1]);
     }
     // BIN OPERATION
+    std::cout << "bin\n";
     outs() << ctx->children[0]->getText() << "\n";
-    Value *lhs = visit(ctx->children[1]).as<Value *>();
+    std::cout << "getT\n";
+    Value *lhs = visit(ctx->children[0]).as<Value *>();
     Value *rhs = visit(ctx->children[2]).as<Value *>();
+    lhs->getType()->print(outs());
+    outs() << '\n';
+    rhs->getType()->print(outs());
+    outs() << '\n';
+    std::cout << lhs->getType() << ' ' << rhs->getType() << '\n';
+    std::cout << "visitChildr\n";
     if (ctx->AND())
-      return builder->CreateAnd(lhs, rhs);
+      return (Value *)builder->CreateAnd(lhs, rhs);
     if (ctx->OR())
-      return builder->CreateOr(lhs, rhs);
+      return (Value *)builder->CreateOr(lhs, rhs);
     if (ctx->COMP()) {
-      std::string op = ctx->children[0]->getText();
+      std::cout << "comp\n";
+      std::string op = ctx->children[1]->getText();
       if (op == "<")
-        return builder->CreateICmpSLT(lhs, rhs);
+        return (Value *)builder->CreateICmpSLT(lhs, rhs);
       if (op == ">")
-        return builder->CreateICmpSGT(lhs, rhs);
+        return (Value *)builder->CreateICmpSGT(lhs, rhs);
       if (op == "<=")
-        return builder->CreateICmpSLE(lhs, rhs);
+        return (Value *)builder->CreateICmpSLE(lhs, rhs);
       if (op == ">=")
-        return builder->CreateICmpSGE(lhs, rhs);
+        return (Value *)builder->CreateICmpSGE(lhs, rhs);
       if (op == "==")
-        return builder->CreateICmpEQ(lhs, rhs);
+        return (Value *)builder->CreateICmpEQ(lhs, rhs);
       if (op == "!=")
-        return builder->CreateICmpNE(lhs, rhs);
+        return (Value *)builder->CreateICmpNE(lhs, rhs);
+      std::cout << op << " is unknown comp op\n";
     }
+    std::cout << "nocomp\n";
     switch (ctx->children[1]->getText().at(0)) {
       case '*':
-        return builder->CreateMul(lhs, rhs);
+        return (Value *)builder->CreateMul(lhs, rhs);
       case '/':
-        return builder->CreateSDiv(lhs, rhs);
+        return (Value *)builder->CreateSDiv(lhs, rhs);
       case '+':
-        return builder->CreateAdd(lhs, rhs);
+        return (Value *)builder->CreateAdd(lhs, rhs);
       case '-':
-        return builder->CreateSub(lhs, rhs);
+        return (Value *)builder->CreateSub(lhs, rhs);
       default:
         break;
     }
     return nullptr;
-  }
-
-  Value *registerVar(const std::string &name, Value *val) {
-    outs() << "registerVar: " << name << "\n";
-    vars.back()[name] = val;
-    return val;
-  }
-
-  Value *searchVar(const std::string &name) {
-    outs() << "searchVar: " << name << "\n";
-    for (auto it = vars.rbegin(); it != vars.rend(); ++it) {
-      if (auto find = it->find(name); find != it->end()) {
-        return find->second;
-      }
-    }
-    // Conflict resolving: node: (expr) <-> (ID)
-    Function *func = module->getFunction(name);
-    if (!func || func->arg_size() > 0) {
-      outs() << "[Error] Can't find variable: " << name << "\n";
-      return nullptr;
-    }
-    outs() << "Change to FuncCall: " << name << "\n";
-    return (Value *)builder->CreateCall(func);
   }
 };
 
@@ -350,7 +362,7 @@ int main(int argc, const char *argv[]) {
   std::cout << "past parse\n";
 //  std::cout << parser.program()->line().size() << '\n';
   // Display the parse tree
-  outs() << parser.program()->toStringTree() << "\n";
+//  outs() << parser.program()->toStringTree() << "\n";
 
   LLVMContext context;
   Module *module = new Module("top", context);
