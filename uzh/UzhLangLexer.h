@@ -13,9 +13,9 @@ class  UzhLangLexer : public antlr4::Lexer {
 public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    T__7 = 8, T__8 = 9, INT = 10, LC = 11, BOL = 12, HWS = 13, DEF = 14, 
-    WHILE = 15, IF = 16, ELSE = 17, RETURN = 18, COMP = 19, AND = 20, OR = 21, 
-    NOT = 22, ID = 23
+    T__7 = 8, T__8 = 9, T__9 = 10, INT = 11, LC = 12, BOL = 13, HWS = 14, 
+    DEF = 15, WHILE = 16, IF = 17, ELSE = 18, RETURN = 19, COMP = 20, AND = 21, 
+    OR = 22, NOT = 23, ID = 24
   };
 
   UzhLangLexer(antlr4::CharStream *input);

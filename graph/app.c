@@ -41,6 +41,8 @@ void app() {
       if (!is_good_pnt(x/dec, y/dec)) {
         x = ((simRand() % SIM_X_SIZE)/3 + SIM_X_SIZE/2)*dec;
         y = ((simRand() % SIM_Y_SIZE)/3 + SIM_Y_SIZE/2)*dec;
+        x = 40000;
+        y = 30000;
       }
       int v_x = a*x - b*x*y/dec;
       v_x /= tmsc;
@@ -52,6 +54,7 @@ void app() {
       }
       x += v_x;
       y += v_y;
+      printf("%d %d\n", x,y);
       xs[p] = x;
       ys[p] = y;
     }

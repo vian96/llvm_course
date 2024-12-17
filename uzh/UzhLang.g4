@@ -17,7 +17,7 @@ exprLine: BOL expr;
 funcCall: ID '('(expr (',' expr)*  )? ')';
 expr:
 	NOT expr
-	| expr ( '*' | '/') expr
+	| expr ( '*' | '/' | '%') expr
 	| expr ( '+' | '-') expr
 	| expr COMP expr
 	| expr AND expr

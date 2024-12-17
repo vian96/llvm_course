@@ -1,0 +1,89 @@
+def is_bad_pnt(x, y):
+    SIM_X_SIZE = 700
+    SIM_Y_SIZE = 500
+    ans = x<=0 or x>=SIM_X_SIZE or y<=0 or y>=SIM_Y_SIZE
+    return ans
+
+def is_good_pnt(x, y):
+    SIM_X_SIZE = 700
+    SIM_Y_SIZE = 500
+    ans = x>0 and x<SIM_X_SIZE and y>0 and y<SIM_Y_SIZE
+    return ans
+
+def drawLine(x, y, x_len, y_len, v_abs) {
+    step = 0
+    STEPS = 10
+    xt = 0
+    yt = 0
+    tmp = 0
+    while step < STEPS:
+   #     print(step)
+        xt = x + x_len * step / STEPS
+        yt = y + y_len * step / STEPS
+        tmp = is_good_pnt(xt, yt)
+   #     print(tmp)
+        if is_good_pnt(xt, yt):
+   #         print(x)
+   #         print(y)
+   #         print(xt)
+   #         print(yt)
+   #         print(4278190335 + v_abs * 65536)
+            simPutPixel(xt, yt, 4278190335 + v_abs * 65536)
+        step = step + 1
+    return 0
+
+def getAbsVelocity(v1, v2) {
+    if v1 < 0:
+        v1 = 0-v1
+    if v2 < 0:
+        v2 = 0-v2
+    return (v1 + v2) % 255
+
+def app():
+    dec = 100
+    tmsc = 10000
+    SIM_X_SIZE = 700
+    SIM_Y_SIZE = 500
+    a = SIM_Y_SIZE/2
+    b = 1
+    g = SIM_X_SIZE/2
+    d = 1
+    x = 0
+    y = 0
+    i = 0
+    c = 0
+    v_x = 0
+    v_y = 0
+    while 1:
+      #  print(x)
+      #  print(y)
+        #print(i)
+        i = i+1
+        c = simRand()
+        #print(c)
+        if is_bad_pnt(x/dec,y/dec):
+            print(222)
+            x = dec * (SIM_X_SIZE/2 + (simRand() % SIM_X_SIZE)/3)
+            y = dec * (SIM_Y_SIZE/2 + (simRand() % SIM_Y_SIZE)/3)
+           # x = 40000
+           # y = 30000
+           # print(x)
+           # print(y)
+            #print(123)
+        #print(1337)
+#        print(x)
+#        print(y)
+        v_x = a*x - b*x*y/dec
+        v_x = v_x/tmsc
+        v_y = 0-g*y + d*x*y/dec
+        v_y = v_y/tmsc
+        #print(777)
+        drawLine(x/dec, y/dec, v_x/dec, v_y/dec, getAbsVelocity(v_x, v_y))
+        #print(0)
+        simFlush()
+        x = x + v_x
+        y = y + v_y
+
+      #  print(x)
+      #  print(y)
+    return 0

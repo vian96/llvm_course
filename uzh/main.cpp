@@ -22,8 +22,9 @@ using namespace llvm;
 
 struct StackEntry {
   int n;
-  enum Type {NO, FUNC, IF} t;
+  enum Type {NO, FUNC, IF, WHILE} t;
   llvm::BasicBlock *to;
+  llvm::BasicBlock *exit;
 };
 
 void print(int n) {
@@ -67,6 +68,8 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     }
     while (space_stack.size() and n != space_stack.back().n) {
       llvm::BasicBlock *to = space_stack.back().to;
+      llvm::BasicBlock *exit = space_stack.back().exit;
+      auto type = space_stack.back().t;
       space_stack.pop_back();
       if (!to) // TODO it means we exited function? what to do?
         break;
@@ -77,8 +80,13 @@ struct TreeLLVMWalker : public UzhLangVisitor {
         space_stack.push_back({n+4, StackEntry::NO, if_else_exit});
         break;
       }
-      builder->CreateBr(to);
-      builder->SetInsertPoint(to);
+      if (type != StackEntry::WHILE) {
+        builder->CreateBr(to);
+        builder->SetInsertPoint(to);
+      } else {
+        builder->CreateBr(to);
+        builder->SetInsertPoint(exit);
+      }
     }
   }
 
@@ -103,7 +111,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     ArrayRef<Type *> simPutPixelParamTypes = {int32Type, int32Type, int32Type};
     FunctionType *simPutPixelType =
         FunctionType::get(int32Type, simPutPixelParamTypes, false);
-    module->getOrInsertFunction("PUT_PIXEL", simPutPixelType);
+    module->getOrInsertFunction("simPutPixel", simPutPixelType);
 
     FunctionType *printFuncType =
         FunctionType::get(Type::getVoidTy(*ctxLLVM), {int32Type}, false);
@@ -111,7 +119,11 @@ struct TreeLLVMWalker : public UzhLangVisitor {
 
     // declare i32 @FLUSH()
     FunctionType *simFlushType = FunctionType::get(int32Type, false);
-    module->getOrInsertFunction("FLUSH", simFlushType);
+    module->getOrInsertFunction("simFlush", simFlushType);
+
+    FunctionType *simRandType =
+        FunctionType::get(int32Type, {}, false);
+    module->getOrInsertFunction("simRand", simRandType);
 
     // program: nodeDecl+;
     for (auto it : ctx->line()) {
@@ -182,7 +194,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     BasicBlock *iterationBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
     BasicBlock *exitBB = BasicBlock::Create(*ctxLLVM, "", currFunc);
 
-    space_stack.push_back({space_stack.back().n+4, StackEntry::NO, cmpBB});
+    space_stack.push_back({space_stack.back().n+4, StackEntry::WHILE, cmpBB, exitBB});
 
     // br label cmpBB
     builder->CreateBr(cmpBB);
@@ -272,7 +284,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     if (ctx->INT()) {
       std::cout << "int\n";
       outs() << ctx->INT()->getText() << "\n";
-      return (Value *)builder->getInt32(std::stoi(ctx->INT()->getText()));
+      return (Value *)builder->getInt32(std::stoul(ctx->INT()->getText()));
     }
     // NOT expr
     if (ctx->children.size() == 2) {
@@ -282,7 +294,7 @@ struct TreeLLVMWalker : public UzhLangVisitor {
     // '(' expr ')'
     if (ctx->children[0]->getText().at(0) == '(') {
       outs() << "()\n";
-      return (Value *)visit(ctx->children[1]);
+      return (Value *)visitExpr(ctx->expr()[0]);
     }
     // BIN OPERATION
     std::cout << "bin\n";
@@ -327,6 +339,8 @@ struct TreeLLVMWalker : public UzhLangVisitor {
         return (Value *)builder->CreateAdd(lhs, rhs);
       case '-':
         return (Value *)builder->CreateSub(lhs, rhs);
+      case '%':
+        return (Value *)builder->CreateSRem(lhs, rhs);
       default:
         break;
     }
@@ -362,7 +376,8 @@ int main(int argc, const char *argv[]) {
   std::cout << "past parse\n";
 //  std::cout << parser.program()->line().size() << '\n';
   // Display the parse tree
-//  outs() << parser.program()->toStringTree() << "\n";
+ // outs() << parser.program()->toStringTree() << "\n";
+ // return 0;
 
   LLVMContext context;
   Module *module = new Module("top", context);
@@ -391,14 +406,17 @@ int main(int argc, const char *argv[]) {
   ExecutionEngine *ee =
       EngineBuilder(std::unique_ptr<Module>(module)).create();
   ee->InstallLazyFunctionCreator([=](const std::string &fnName) -> void * {
-    if (fnName == "PUT_PIXEL") {
+    if (fnName == "simPutPixel") {
       return reinterpret_cast<void *>(simPutPixel);
     }
-    if (fnName == "FLUSH") {
+    if (fnName == "simFlush") {
       return reinterpret_cast<void *>(simFlush);
     }
     if (fnName == "print") {
       return reinterpret_cast<void *>(print);
+    }
+    if (fnName == "simRand") {
+      return reinterpret_cast<void *>(simRand);
     }
     return nullptr;
   });
